@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>성경 암송 도우미</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap');
+        body {
+            font-family: 'Noto Serif KR', serif;
+            background-color: #f8f9fa;
+        }
+        .verse-content {
+            line-height: 1.8;
+            transition: filter 0.3s ease;
+        }
+        .hidden-content {
+            filter: blur(8px);
+            user-select: none;
+        }
+        .hidden-content:hover {
+            filter: blur(0);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <div class="max-w-3xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">📖 성경 암송 도우미</h1>
+            <p class="text-gray-600">말씀을 마음에 새기는 시간</p>
+        </header>
+
+        <!-- Controls -->
+        <div class="flex flex-wrap gap-3 mb-8 justify-center">
+            <button id="prevBtn" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-full font-bold shadow-sm transition">
+                ⬅️ 이전
+            </button>
+            <button id="randomBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-full font-bold shadow-md transition">
+                🎲 랜덤
+            </button>
+            <button id="nextBtn" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-full font-bold shadow-sm transition">
+                다음 ➡️
+            </button>
+            <button id="toggleBlurBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-full font-bold transition">
+                👁️ 가리기
+            </button>
+            <select id="bookFilter" class="bg-white border border-gray-300 px-4 py-2 rounded-full text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="all">전체 성경</option>
+            </select>
+        </div>
+
+        <!-- Verse Display Card -->
+        <div id="verseCard" class="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-8 border border-gray-100 min-h-[300px] flex flex-col justify-center text-center">
+            <div id="verseReference" class="text-indigo-600 font-bold text-xl mb-4">구절을 불러오는 중...</div>
+            <div id="verseTitle" class="text-gray-500 text-sm mb-6 font-medium"></div>
+            <div id="verseBody" class="verse-content text-gray-800 text-xl md:text-2xl font-medium break-keep">
+                텍스트 데이터를 분석하고 있습니다.
+            </div>
+        </div>
+
+        <!-- List View -->
+        <div class="mt-12">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">구절 목록</h2>
+            <div id="verseList" class="space-y-4">
+                <!-- Verse items will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 업로드해주신 텍스트 데이터
+        const rawData = `
+A. 필수 암송구절
+
+창세기
+
+3:15 (원시복음, 창세기 주제)
+내가 너로 여자와 원수가 되게 하고 네 후손도 여자의 후손과 원수가 되게 하리니 여자의 후손은 네 머리를 상하게 할 것이요 너는 그의 발꿈치를 상하게 할 것이니라 하시고 
+
+12:1-2 (하나님의 부름과 약속)
+1 여호와께서 아브람에게 이르시되 너는 너의 고향과 친척과 아버지의 집을 떠나 내가 네게 보여 줄 땅으로 가라 
+2 내가 너로 큰 민족을 이루고 네게 복을 주어 네 이름을 창대하게 하리니 너는 복이 될지라 
+
+22:12 (하나님 경외)
+사자가 이르시되 그 아이에게 네 손을 대지 말라 그에게 아무 일도 하지 말라 네가 네 아들 네 독자까지도 내게 아끼지 아니하였으니 내가 이제야 네가 하나님을 경외하는 줄을 아노라
+
+49:10 (메시아 예언)
+규가 유다를 떠나지 아니하며 통치자의 지팡이가 그 발 사이에서 떠나지 아니하기를 실로가 오시기까지 이르리니 그에게 모든 백성이 복종하리로다 
+
+
+출애굽기
+
+3:14 (하나님의 이름과 존재)
+하나님이 모세에게 이르시되 나는 스스로 있는 자이니라 또 이르시되 너는 이스라엘 자손에게 이같이 이르기를 스스로 있는 자가 나를 너희에게 보내셨다 하라 
+
+12:13 (유월절 의미)
+내가 애굽 땅을 칠 때에... (생략)
+
+베드로후서 
+
+3:18 (그리스도의 은혜와 그를 아는 지식)  
+오직 우리 주 곧 구주 예수 그리스도의 은혜와 그를 아는 지식에서 자라 가라 영광이 이제와 영원한 날까지 그에게 있을지어다 
+
+
+요한일서 
+
+2:1-2 (대언자 예수 그리스도) 
+1 나의 자녀들아 내가 이것을 너희에게 씀은 너희로 죄를 범하지 않게 하려 함이라 만일 누가 죄를 범하여도 아버지 앞에서 우리에게 대언자가 있으니 곧 의로우신 예수 그리스도시라 
+2 그는 우리 죄를 위한 화목제물이니 우리만 위할 뿐 아니요 온 세상의 죄를 위하심이라  
+ 
+3:4 (죄란 무엇인가?)
+죄를 짓는 자마다 불법을 행하나니 죄는 불법이라 
+
+5:13 (우리에게 영생이 있음) 
+내가 하나님의 아들의 이름을 믿는 너희에게 이것을 쓰는 것은 너희로 하여금 너희에게 영생이 있음을 알게 하려 함이라
+        `;
+
+        let verses = [];
+        let currentIndex = 0;
+        let isBlurred = false;
+
+        // 텍스트 파싱 로직
+        function parseVerses(text) {
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            let currentBook = "";
+            let parsedVerses = [];
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+
+                if (line.match(/^[가-힣]+$/) && !line.includes("암송구절")) {
+                    currentBook = line;
+                    continue;
+                }
+
+                if (line.match(/^\d+:\d+/)) {
+                    const refMatch = line.match(/^(\d+:\d+[-\d]*)\s*\((.*)\)/);
+                    const ref = refMatch ? refMatch[1] : line.split(' ')[0];
+                    const title = refMatch ? refMatch[2] : "";
+                    
+                    let content = "";
+                    let j = i + 1;
+                    while (j < lines.length && !lines[j].match(/^\d+:\d+/) && !lines[j].match(/^[가-힣]+$/)) {
+                        content += lines[j] + " ";
+                        j++;
+                    }
+                    
+                    parsedVerses.push({
+                        book: currentBook,
+                        reference: ref,
+                        title: title,
+                        content: content.trim()
+                    });
+                    i = j - 1;
+                }
+            }
+            return parsedVerses;
+        }
+
+        function init() {
+            verses = parseVerses(rawData);
+            
+            const books = [...new Set(verses.map(v => v.book))];
+            const filter = document.getElementById('bookFilter');
+            books.forEach(book => {
+                const opt = document.createElement('option');
+                opt.value = book;
+                opt.textContent = book;
+                filter.appendChild(opt);
+            });
+
+            // 초기 표시
+            updateDisplay(0);
+            renderList();
+
+            // 이벤트 리스너
+            document.getElementById('randomBtn').addEventListener('click', displayRandomVerse);
+            document.getElementById('prevBtn').addEventListener('click', () => navigateVerse(-1));
+            document.getElementById('nextBtn').addEventListener('click', () => navigateVerse(1));
+            document.getElementById('toggleBlurBtn').addEventListener('click', toggleBlur);
+            document.getElementById('bookFilter').addEventListener('change', () => {
+                currentIndex = 0;
+                updateDisplay(0);
+                renderList();
+            });
+        }
+
+        function getFilteredVerses() {
+            const filterVal = document.getElementById('bookFilter').value;
+            return filterVal === 'all' ? verses : verses.filter(v => v.book === filterVal);
+        }
+
+        function updateDisplay(index) {
+            const filtered = getFilteredVerses();
+            if (filtered.length === 0) return;
+
+            // 인덱스 범위 조정 (순환)
+            if (index >= filtered.length) index = 0;
+            if (index < 0) index = filtered.length - 1;
+            
+            currentIndex = index;
+            const v = filtered[currentIndex];
+            
+            document.getElementById('verseReference').textContent = `${v.book} ${v.reference}`;
+            document.getElementById('verseTitle').textContent = v.title ? `[${v.title}]` : "";
+            document.getElementById('verseBody').textContent = v.content;
+            
+            applyBlur();
+        }
+
+        function navigateVerse(direction) {
+            updateDisplay(currentIndex + direction);
+        }
+
+        function displayRandomVerse() {
+            const filtered = getFilteredVerses();
+            if (filtered.length === 0) return;
+            const randomIndex = Math.floor(Math.random() * filtered.length);
+            updateDisplay(randomIndex);
+        }
+
+        function toggleBlur() {
+            isBlurred = !isBlurred;
+            const btn = document.getElementById('toggleBlurBtn');
+            btn.textContent = isBlurred ? "🔓 해제" : "👁️ 가리기";
+            applyBlur();
+        }
+
+        function applyBlur() {
+            const bodyEl = document.getElementById('verseBody');
+            const listContents = document.querySelectorAll('.list-content');
+            
+            if (isBlurred) {
+                bodyEl.classList.add('hidden-content');
+                listContents.forEach(el => el.classList.add('hidden-content'));
+            } else {
+                bodyEl.classList.remove('hidden-content');
+                listContents.forEach(el => el.classList.remove('hidden-content'));
+            }
+        }
+
+        function renderList() {
+            const filtered = getFilteredVerses();
+            const listContainer = document.getElementById('verseList');
+            
+            listContainer.innerHTML = '';
+            
+            filtered.forEach((v, index) => {
+                const item = document.createElement('div');
+                item.className = "bg-white p-5 rounded-lg shadow-sm border border-gray-100 hover:border-indigo-200 transition cursor-pointer";
+                item.onclick = () => {
+                    updateDisplay(index);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                
+                item.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="font-bold text-indigo-600">${v.book} ${v.reference}</span>
+                        <span class="text-xs text-gray-400 font-medium">${v.title}</span>
+                    </div>
+                    <p class="text-gray-700 text-sm list-content ${isBlurred ? 'hidden-content' : ''}">${v.content}</p>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
