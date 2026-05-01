@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>익명의 메조히스트 모임 - 관찰자 아카이브</title>
-    <!-- Google Fonts: 나눔글꼴 적용 (굵기 다양화) -->
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS with Typography Plugin -->
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-    <!-- Marked.js for Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
@@ -26,7 +22,6 @@
             color: #ffffff;
         }
         
-        /* 본문 전용 폰트 및 가독성 설정 */
         .readable-text {
             font-family: 'Nanum Myeongjo', serif !important;
             word-break: keep-all;
@@ -34,7 +29,6 @@
             transition: font-size 0.2s ease, line-height 0.2s ease;
         }
 
-        /* 컨트롤 패널 스타일링 */
         .control-panel {
             background: rgba(30, 30, 35, 0.95);
             border: 1px solid #444;
@@ -42,19 +36,16 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* 텍스트 크기 단계별 클래스 */
         .text-size-0 { font-size: 1.0rem !important; }
         .text-size-1 { font-size: 1.15rem !important; }
         .text-size-2 { font-size: 1.3rem !important; }
         .text-size-3 { font-size: 1.5rem !important; }
         .text-size-4 { font-size: 1.75rem !important; }
 
-        /* 줄간격 단계별 클래스 */
         .leading-step-0 { line-height: 1.6 !important; }
         .leading-step-1 { line-height: 2.0 !important; }
         .leading-step-2 { line-height: 2.5 !important; }
 
-        /* 마크다운 제목 및 강조 가시성 */
         .prose h3 {
             font-family: 'Nanum Gothic', sans-serif;
             color: #ffffff !important;
@@ -76,14 +67,12 @@
             margin: 4rem 0 !important;
         }
 
-        /* 댓글 구분선 강조 */
         .comment-divider {
             border-top: 1px solid #333;
             margin: 2rem 0;
             width: 100%;
         }
 
-        /* 교회 게시판 UI 개선 (중첩 구조 시각화) */
         .church-prose blockquote {
             border: none !important;
             margin: 1.5rem 0 !important;
@@ -130,6 +119,12 @@
             gap: 0.5rem;
         }
 
+        .comment-content {
+            margin-top: 0.25rem;
+            color: #d1d5db;
+            line-height: 1.7;
+        }
+
         .fade-in {
             animation: fadeIn 0.4s ease-out;
         }
@@ -141,7 +136,6 @@
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
-    <!-- Header -->
     <header class="sticky top-0 z-50 bg-black/95 border-b border-zinc-800 p-4">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-3">
@@ -149,7 +143,6 @@
                 <h1 class="text-sm tracking-widest text-zinc-300 font-bold uppercase font-['Nanum_Gothic']">Log Viewer : Archive SS</h1>
             </div>
             
-            <!-- 데스크탑 컨트롤러 -->
             <div class="hidden md:flex items-center space-x-6 control-panel px-6 py-2 rounded-full border border-zinc-700">
                 <div class="flex items-center space-x-3 border-r border-zinc-700 pr-5">
                     <span class="text-[11px] text-zinc-500 font-bold uppercase">글자 크기</span>
@@ -167,7 +160,6 @@
         </div>
     </header>
 
-    <!-- 모바일 전용 플로팅 컨트롤러 -->
     <div class="md:hidden fixed bottom-8 right-6 z-50 flex flex-col items-end space-y-3">
         <div id="mobile-menu" class="hidden flex flex-col space-y-4 bg-zinc-900/98 p-5 rounded-3xl border border-zinc-700 shadow-2xl backdrop-blur-xl">
             <div class="flex flex-col space-y-2">
@@ -194,20 +186,16 @@
 
     <main class="flex-grow w-full max-w-4xl mx-auto p-5 md:p-12 flex flex-col space-y-16">
         
-        <!-- Post Title Area -->
         <div class="text-center space-y-6">
             <h2 id="post-title" class="text-4xl md:text-6xl font-extrabold text-white font-['Nanum_Gothic'] tracking-tighter leading-tight"></h2>
             <div class="h-1.5 w-32 bg-red-700 mx-auto rounded-full shadow-[0_0_15px_rgba(185,28,28,0.5)]"></div>
         </div>
 
-        <!-- [몸글] Section -->
         <article class="relative bg-zinc-900/30 p-8 md:p-12 rounded-3xl border border-zinc-800">
             <div id="main-text" class="readable-text prose prose-invert max-w-none text-white fade-in">
-                <!-- Content -->
             </div>
         </article>
 
-        <!-- Navigation -->
         <nav class="flex justify-between items-center py-10 border-y border-zinc-800/50 font-['Nanum_Gothic']">
             <button id="btn-prev" onclick="navigate(-1)" class="group flex items-center space-x-4 text-zinc-500 hover:text-white transition-all disabled:opacity-0">
                 <i data-lucide="chevron-left" class="group-hover:-translate-x-2 transition-transform"></i>
@@ -220,9 +208,7 @@
             </button>
         </nav>
 
-        <!-- Comments Section -->
         <div class="space-y-24 pb-48">
-            <!-- 카페 댓글 -->
             <div class="space-y-8">
                 <div class="flex items-center space-x-4 border-b-2 border-red-900/30 pb-4">
                     <div class="bg-red-900/20 p-2 rounded-lg">
@@ -231,11 +217,9 @@
                     <h3 class="font-bold text-zinc-100 uppercase tracking-[0.2em] text-base font-['Nanum_Gothic']">Secret Cafe History</h3>
                 </div>
                 <div id="cafe-comments" class="readable-text prose prose-invert max-w-none text-zinc-100 fade-in">
-                    <!-- Content -->
                 </div>
             </div>
 
-            <!-- 교회 게시판 -->
             <div class="space-y-8">
                 <div class="flex items-center space-x-4 border-b-2 border-zinc-800 pb-4">
                     <div class="bg-zinc-800/50 p-2 rounded-lg">
@@ -244,159 +228,171 @@
                     <h3 class="font-bold text-zinc-300 uppercase tracking-[0.2em] text-base font-['Nanum_Gothic']">Public : Church Board</h3>
                 </div>
                 <div id="church-comments" class="readable-text prose prose-invert max-w-none church-prose fade-in">
-                    <!-- Content -->
                 </div>
             </div>
         </div>
     </main>
 
     <script>
+        // HTML escape utility
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Parse church board Markdown format
+        function parseChurchComments(mdText) {
+            const lines = mdText.split('\n');
+            const threads = [];
+            let currentThread = null;
+            let currentComment = null;
+            let pendingContent = [];
+
+            function flushComment() {
+                if (currentComment && pendingContent.length > 0) {
+                    currentComment.content = pendingContent.join('\n').trim();
+                    if (currentComment.type === 'top') {
+                        currentThread = { top: currentComment, replies: [] };
+                        threads.push(currentThread);
+                    } else if (currentComment.type === 'reply') {
+                        if (currentThread) {
+                            currentThread.replies.push(currentComment);
+                        } else {
+                            // orphan reply – wrap in its own thread
+                            threads.push({ top: null, replies: [currentComment] });
+                        }
+                    }
+                    currentComment = null;
+                    pendingContent = [];
+                }
+            }
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const trimmed = line.trim();
+                if (trimmed === '') continue;
+
+                // Header line: > or >> followed by **nickname** *date*
+                const headerMatch = trimmed.match(/^(>{1,2}) \*\*(.+?)\*\* \*(.+?)\*$/);
+                if (headerMatch) {
+                    flushComment();
+                    const prefix = headerMatch[1];
+                    const nickname = headerMatch[2];
+                    const date = headerMatch[3];
+                    const type = prefix === '>' ? 'top' : 'reply';
+                    currentComment = { type, nickname, date, content: '' };
+                    pendingContent = [];
+                } else {
+                    // Content line – must start with > or >>
+                    let contentText = null;
+                    if (line.startsWith('>> ')) {
+                        contentText = line.substring(3).trim();
+                    } else if (line.startsWith('> ')) {
+                        contentText = line.substring(2).trim();
+                    }
+                    if (contentText !== null && currentComment) {
+                        pendingContent.push(contentText);
+                    }
+                }
+            }
+            flushComment();
+
+            // Build HTML
+            let html = '';
+            for (const thread of threads) {
+                if (thread.top) {
+                    html += `<div class="comment-thread">
+                        <div class="author-tag">
+                            <i data-lucide="user" class="w-4 h-4"></i> ${escapeHtml(thread.top.nickname)} <span class="text-zinc-500 text-sm ml-2">${escapeHtml(thread.top.date)}</span>
+                        </div>
+                        <div class="comment-content">${escapeHtml(thread.top.content).replace(/\n/g, '<br>')}</div>`;
+                }
+                for (const reply of thread.replies) {
+                    html += `<div class="comment-reply">
+                        <div class="author-tag">
+                            <i data-lucide="user-plus" class="w-4 h-4 text-red-500"></i> ${escapeHtml(reply.nickname)} <span class="text-zinc-500 text-sm ml-2">${escapeHtml(reply.date)}</span>
+                        </div>
+                        <div class="comment-content">${escapeHtml(reply.content).replace(/\n/g, '<br>')}</div>
+                    </div>`;
+                }
+                if (thread.top) {
+                    html += `</div>`;
+                }
+            }
+            return html;
+        }
+
         const episodes = [
             {
                 title: "은밀한 고해성사",
                 mainText: `
-**장윤영:** 언니, 지난번에 언니가 그렇게 힘겹게 꺼냈던 '뜨거운 밤' 소문 얘기에 이어서, 결국 그날 대구 서광교회 고등부실에서 창환이랑 무슨 일이 있었는지 본격적으로 털어놓을 시간이죠? 언니가 굳이 저를 다시 찾았을 때는 이미 예상하고 있었어요. ㅎㅎ
+### 가식의 껍데기 아래에서
 
-**손세미:** (하... 이 아이의 능글맞음은 여전하네. 하지만 내가 지금 가장 솔직하게 내보일 수 있는 곳은 여기뿐이겠지.) 응, 윤영아. 그... 그래. 지난번에 얘기하다 말았지. 2009년 4월의 일이었어. 벚꽃이 참 예뻤던 오후 4시쯤. 나는 고등부실에 앉아서 창환이를 기다리고 있었어. 인근 PC방에 있다는 소식 듣고... 잠깐 들러달라고 불렀지. 그때는... 정말 너무 마음이 무거웠거든.
+오늘도 무사히 하루가 끝났어요. 아침 일찍부터 하얀 블라우스의 단추를 목 끝까지 채우고, 무릎을 덮는 A라인 스커트를 입은 채 학교로 향했죠. 아이들은 저를 **'천사 같은 선생님'**이라고 부르고, 동료 교사들은 **'참 단아하다'**며 칭찬해요. 제 겉모습은 철저하게 통제되어 있으니까요.
 
-**장윤영:** 흐음~ 마음이 무거웠다구요? 그냥 딱 교사로서 '어휴, 저 문제아 학생을 어쩌면 좋나' 하는 마음이었어요? 아니면... 소문 속 '크고, 강하고, 단단한' 그거에 대한 막연한 호기심이나... 뭐 그런 게 마음 한구석을 간질이기도 했구요? 언니, 솔직히 이젠 좀 인정할 때도 되지 않았어요? ㅎㅎ
+***
 
-**손세미:** (움찔.) 윤영아, 말 참... 내가 어떻게 그런 생각을 해! 나는 그때, 담임 교사로서 우리 반 아이가 방황하는 걸 그냥 두고 볼 수가 없었어. 그 '뜨거운 밤' 소문이라는 게... 또래 이성과 교제하는 수준이 아니었잖아. 몇몇 여학생들이랑 아슬아슬하게 선을 넘나들며 '뜨거운 밤'을 보낸다는 소리였고, 심지어 상대방을 가리지 않는다는 얘기까지... 그 여학생들이 결국은 창환이한테 매달리게 된다는 말에... '크고, 강하고, 단단하고...' 그런 속삭임들이 내 귓가를 맴돌 때마다... 나는 정말 수치스러웠어. 교사로서 감당하기엔 너무 노골적이었고... 내 정숙한 이미지와는 너무나 동떨어진 단어들이라... 그땐 정말 부끄러워서 그랬지, 다른 건 아니었어.
+주말에는 더 완벽한 연극이 시작돼요. **대구서광교회** 고등부 주일학교 담임교사. 장로님이신 아버지와 권사이신 어머니의 자랑스러운 맏딸. 성가대석에 앉아 두 손을 모으고 찬양을 부를 때면, 제 속에서 끓어오르는 은밀하고 끈적한 갈증을 아무도 눈치채지 못해요.
 
-**장윤영:** 푸핫. 수치스러웠다구요? 그렇게 말하면서 언니 얼굴 지금 또 빨개지는 거 봐요. ^^; 지난번에도 그랬잖아요? 솔직히 그런 야릇한 소문들이 언니의 '상상력'을 건드린 건 사실이라고. 그게 다 '부끄러움' 때문만은 아니었죠? 언니도 엄연한 여자인데, 그런 얘기를 들으면 당연히... (의미심장한 눈빛으로 쳐다보며)
+### 억압된 본능
 
-**손세미:** (애써 시선을 피하며) 아, 아니야! 잠깐의 일탈적인 생각이었을 뿐이야. 그걸 제자에게 품을 리가 없잖아! 난 그저 창환이가 걱정스러웠어. 특히 지난주에 벚꽃놀이를 간다며 데려온 그 친구... 165cm의 늘씬한 키에 새하얗고 맑은 피부... 누가 봐도 영악할 정도로 예쁜 여우상 미녀였어. 다들 수군거렸지만, 나는 그 여학생이 창환이를 보던 눈빛의 의미를 정확히 알아챘어. 황홀경에 빠진 듯, 온통 사랑에 물든 그 눈빛은... 분명 어젯밤 그들이 함께 보낸 시간의 흔적을 고스란히 담고 있었을 거야. 분명 '크고, 강하고, 단단한' 그 무엇에 매료된 거였겠지. 그 모습이 나에게는 너무 충격적이었어. 내 제자가... 저렇게.
+하지만 여러분은 아시죠? 제가 정숙을 강요받을수록, 누군가 제게 거칠게 명령하고 이 완벽한 껍데기를 찢어발겨 주길 원한다는 걸요. 오늘 낮에 교무실에서 깐깐한 교감 선생님께 불려가 꾸지람을 들을 때... 겉으로는 죄송하다며 고개를 숙이고 있었지만, 속으로는 *'더 심하게, 더 노골적으로 혼내줬으면'* 하고 상상해버렸어요. 
 
-**장윤영:** 허얼~ 언니. 그 여학생 눈빛을 그렇게까지 정확하게 '읽어냈다'는 게 더 무서운데요? 언니가 무슨 초능력자도 아니고. 혹시 언니도 그 '크고, 강하고, 단단한' 게 뭔지... 직접 경험해보고 싶었던 거 아니에요? 그래서 그렇게 눈빛까지 분석하고, 막 뇌내망상에 빠졌던 거 아니냐구요? 캬아~ 언니도 여잔데, 충분히 그럴 수 있죠! 어머, 언니 얼굴 또 빨개진다. ㅋㅋㅋ *(타이핑을 치는 지금도 그때 그날의 기분이 되살아나는 것 같아서... 나도 모르게 얼굴이 화끈 달아오른다. 윤영이 저 아이는 정말... 나를 너무 잘 알아.)*
-
-**손세미:** (한숨) 아, 정말... 윤영아... 나는 그냥... 제자가 걱정됐을 뿐이야. 창환이가 이렇게 방황의 길로 접어든 게 작년 2008년 이맘때부터였거든. 그전까지는 정말 순수하고 착한 아이였는데... 그는 2002년 소년부 겨울성경학교에서 보조교사로 처음 만났을 때부터 날 사랑해왔다고... 그는 내게 고백했었어. 그때 난 단호하게 선을 그었지. 
+이런 제 자신이 무서우면서도, 이 짜릿한 이중생활을 멈출 수가 없네요.
                 `,
                 cafeComments: `
-**83여교사** *2013-05-15*
-**장윤영:** 언니, 지난번에 언니가 그렇게 힘겹게 꺼냈던 '뜨거운 밤' 소문 얘기에 이어서, 결국 그날 대구 서광교회 고등부실에서 창환이랑 무슨 일이 있었는지 본격적으로 털어놓을 시간이죠? 언니가 굳이 저를 다시 찾았을 때는 이미 예상하고 있었어요. ㅎㅎ
+**마스터_K**
+선생님, 겉옷의 단추를 채울 때마다 무슨 생각을 하셨을지 상상하니 정말 흥분되네요. 그 얌전한 스커트 속에 숨겨진 진짜 모습을 확인하고 싶어집니다.
 
-**손세미:** (하... 이 아이의 능글맞음은 여전하네. 하지만 내가 지금 가장 솔직하게 내보일 수 있는 곳은 여기뿐이겠지.) 응, 윤영아. 그... 그래. 지난번에 얘기하다 말았지. 2009년 4월의 일이었어. 벚꽃이 참 예뻤던 오후 4시쯤. 나는 고등부실에 앉아서 창환이를 기다리고 있었어. 인근 PC방에 있다는 소식 듣고... 잠깐 들러달라고 불렀지. 그때는... 정말 너무 마음이 무거웠거든.
+---
 
-**장윤영:** 흐음~ 마음이 무거웠다구요? 그냥 딱 교사로서 '어휴, 저 문제아 학생을 어쩌면 좋나' 하는 마음이었어요? 아니면... 소문 속 '크고, 강하고, 단단한' 그거에 대한 막연한 호기심이나... 뭐 그런 게 마음 한구석을 간질이기도 했구요? 언니, 솔직히 이젠 좀 인정할 때도 되지 않았어요? ㅎㅎ
-
-**손세미:** (움찔.) 윤영아, 말 참... 내가 어떻게 그런 생각을 해! 나는 그때, 담임 교사로서 우리 반 아이가 방황하는 걸 그냥 두고 볼 수가 없었어. 그 '뜨거운 밤' 소문이라는 게... 또래 이성과 교제하는 수준이 아니었잖아. 몇몇 여학생들이랑 아슬아슬하게 선을 넘나들며 '뜨거운 밤'을 보낸다는 소리였고, 심지어 상대방을 가리지 않는다는 얘기까지... 그 여학생들이 결국은 창환이한테 매달리게 된다는 말에... '크고, 강하고, 단단하고...' 그런 속삭임들이 내 귓가를 맴돌 때마다... 나는 정말 수치스러웠어. 교사로서 감당하기엔 너무 노골적이었고... 내 정숙한 이미지와는 너무나 동떨어진 단어들이라... 그땐 정말 부끄러워서 그랬지, 다른 건 아니었어.
-
-**장윤영:** 푸핫. 수치스러웠다구요? 그렇게 말하면서 언니 얼굴 지금 또 빨개지는 거 봐요. ^^; 지난번에도 그랬잖아요? 솔직히 그런 야릇한 소문들이 언니의 '상상력'을 건드린 건 사실이라고. 그게 다 '부끄러움' 때문만은 아니었죠? 언니도 엄연한 여자인데, 그런 얘기를 들으면 당연히... (의미심장한 눈빛으로 쳐다보며)
-
-**손세미:** (애써 시선을 피하며) 아, 아니야! 잠깐의 일탈적인 생각이었을 뿐이야. 그걸 제자에게 품을 리가 없잖아! 난 그저 창환이가 걱정스러웠어. 특히 지난주에 벚꽃놀이를 간다며 데려온 그 친구... 165cm의 늘씬한 키에 새하얗고 맑은 피부... 누가 봐도 영악할 정도로 예쁜 여우상 미녀였어. 다들 수군거렸지만, 나는 그 여학생이 창환이를 보던 눈빛의 의미를 정확히 알아챘어. 황홀경에 빠진 듯, 온통 사랑에 물든 그 눈빛은... 분명 어젯밤 그들이 함께 보낸 시간의 흔적을 고스란히 담고 있었을 거야. 분명 '크고, 강하고, 단단한' 그 무엇에 매료된 거였겠지. 그 모습이 나에게는 너무 충격적이었어. 내 제자가... 저렇게.
-
-**장윤영:** 허얼~ 언니. 그 여학생 눈빛을 그렇게까지 정확하게 '읽어냈다'는 게 더 무서운데요? 언니가 무슨 초능력자도 아니고. 혹시 언니도 그 '크고, 강하고, 단단한' 게 뭔지... 직접 경험해보고 싶었던 거 아니에요? 그래서 그렇게 눈빛까지 분석하고, 막 뇌내망상에 빠졌던 거 아니냐구요? 캬아~ 언니도 여잔데, 충분히 그럴 수 있죠! 어머, 언니 얼굴 또 빨개진다. ㅋㅋㅋ *(타이핑을 치는 지금도 그때 그날의 기분이 되살아나는 것 같아서... 나도 모르게 얼굴이 화끈 달아오른다. 윤영이 저 아이는 정말... 나를 너무 잘 알아.)*
-
-**손세미:** (한숨) 아, 정말... 윤영아... 나는 그냥... 제자가 걱정됐을 뿐이야. 창환이가 이렇게 방황의 길로 접어든 게 작년 2008년 이맘때부터였거든. 그전까지는 정말 순수하고 착한 아이였는데... 그는 2002년 소년부 겨울성경학교에서 보조교사로 처음 만났을 때부터 날 사랑해왔다고... 그는 내게 고백했었어. 그때 난 단호하게 선을 그었지.
-
-> **메조히스트1** *2013-05-15*
-> 와 제목부터 미쳤다 미쳤어;; '뜨거운 숨결이 가슴에 닿았을 때' 캬.... 쌤 진짜 고등부실에서 무슨 일 있었는지 빨리 다음 화 줘요 현기증 난단 말이에요 ㅠㅠ
-
-> **메조히스트2** *2013-05-15*
-> 쌤 윤영이가 '얼굴 빨개지는 거 봐요^^' 할 때마다 내가 다 짜릿함 ㅋㅋㅋ 그 '크고 강하고 단단한' 거에 대한 호기심 인정 안 하는 거 개웃곀ㅋㅋㅋㅋ 속마음 다 티 난다구요!
-
-> **메조히스트3** *2013-05-15*
-> 벚꽃놀이 그 여학생 얘기 진짜 대박 ㄷㄷ '황홀경에 빠진 눈빛'을 쌤이 어쩜 그렇게 자세히 아세요? 그거 본인 얘기 아니냐며 ㅋㅋㅋㅋ 쌤 뇌내망상 스케일b
-
-> **메조히스트4** *2013-05-16*
-> 2009년 일인데 2013년에도 이렇게 얼굴 화끈거린다는 거 봐 ㅋㅋㅋ 언니 지금 31살인데 아직도 창환이 못 잊었죠? 순수하고 단아한 초등교사 이미지 어디 갔냐구요 캬
-
-> **메조히스트5** *2013-05-16*
-> 쌤은 '수치스러웠다'면서 왜 맨날 그렇게 창환이 얘기만 하면 얼굴이 빨개지는지 ㅋㅋㅋㅋ 윤영이가 '언니도 여자인데' 할 때 내가 다 심장 쫄깃해짐 ㅠㅠㅠ
-
-> **메조히스트6** *2013-05-16*
-> 2002년부터 쌤 사랑했다는 창환이 ㄷㄷ 이거 완전 역키잡 각 아니냐구요? 담임교사라고 선 그었지만 쌤 마음은 이미 넘어가 있었던 거 아니냐구욧!!
-
-> **메조히스트7** *2013-05-16*
-> 교회 고등부실에서 '뜨거운 숨결'이라니... 배경마저 완벽 ㅠㅠ 금단의 사과가 제일 달콤한 법이잖아요 쌤... 어서 더 줘요 흐읍
-
-> **메조히스트8** *2013-05-17*
-> 쌤이 '제자가 방황하는 게 걱정스러웠을 뿐이야' 이러는 거 볼 때마다 진짜 ㅋㅋㅋㅋㅋ 그 '크고 강하고 단단한' 그거에 대한 집착이 더 커보인다구욧!
-
-> **메조히스트9** *2013-05-17*
-> 31살 쌤이 20대 초반 애들한테도 안 질 창환이한테 그렇게 매달리고 미련 갖는 게 너무 좋다... 뭔가 배덕감 들고 ㅋㅋㅋㅋ 계속 질척거려주세요 쌤 ㅠㅠ
-
-> **메조히스트10** *2013-05-17*
-> '초능력자도 아니고 그 눈빛을 그렇게 읽어냈다'는 윤영이 일침에 소름! 쌤 그냥 본인이 그거 직접 느껴보고 싶었던 거 맞죠? 어서 본심을 드러내라규!
+**RedVelvet**
+와... 교회 성가대석에서 그런 상상을 하시다니. 제일 성스러운 곳에서 느끼는 가장 타락한 감정... 최고예요. 다음엔 교감 선생님과의 일화를 더 자세히 풀어주세요.
                 `,
                 churchComments: `
-> **장윤영** *2014-02-01*
-> 얘들아, 이거 3개월 전 게시글인데 '익명의 메조히스트 모임' 애들 댓글 반응 보니까 손세미 언니는 진짜 자기 팔자 자기가 꼬는 거 같아. '31살인데 아직도 창환이 못 잊었냐'는 메조히스트4 말 진짜 소름 돋지 않냐?
+> **박권사님** *2024.12.10 14:30*
+> 세미 쌤, 이번 주 특송 너무 좋았어요. 목소리가 어쩌면 그렇게 청아한지. 우리 아들이 세미 쌤 같은 며느리 얻으면 소원이 없겠대요~ 호호.
 
-> **정경내** *2014-02-01*
-> 푸하핫, 윤영쌤 말이 맞다니까. '수치스러웠다'면서 얼굴 빨개지는 거 메조히스트2가 짚은 거 보면 딱 각 나오잖아. 그 '크고 강하고 단단한' 거에 이미 홀라당 넘어간 거지 뭐. 지는 아닌 척 오지네.
-
-> **박예성** *2014-02-01*
-> 우와... 메조히스트1이 '뜨거운 숨결' 빨리 다음 화 달라고 한 거 핵공감. 창환이형 대체 뭐였어요? 그렇게 대단해요? 세미쌤이 굳이 PC방까지 불러서 기다릴 정도면... 형들 혹시 창환이형만의 '스킬' 알아요?
-
-> **박성진** *2014-02-01*
-> 예성이 넌 창환이형 빠는 것도 적당히 해라. '크고 강하고 단단한' 거? 풋, 내가 창환이보다 못할 거 같냐? 세미쌤 그때 검정 스타킹에 블라우스 핏 진짜 오졌는데... 그걸 창환이가 먼저 꿀꺽했다니 존나 아깝네.
-
-> **전현우** *2014-02-01*
-> 성진이 너도 참... 교회 고등부실에서 그런 얘길 하는 게 맞냐? 하... 근데 솔직히 내가 더 어이가 없다. 그때 내가 세미누나 더 잘 챙겼으면 창환이가 아니라 내 차지였을까 싶기도 하고. 창환이 걔 진짜 보통 놈 아니네.
-
-> **이기쁨** *2014-02-01*
-> 언니들... ㅠㅠ 저 진짜 메조히스트들 댓글 보면서 너무 놀랐어요. '황홀경에 빠진 눈빛' 얘기 쌤이 그렇게 잘 아는 게 본인 경험 아니냐는 메조히스트3 말... 으으, 너무 야해요...
-
-> **장윤영** *2014-02-01*
-> 기쁨아, 야한 게 아니라 현실이야. 세미언니는 저렇게 말하면서도 눈빛은 이미 '난 더 지배당하고 싶어' 하는 거 같았어. 메조히스트10이 '초능력자도 아니고 눈빛을 그렇게 읽냐'고 깐 게 딱 정곡을 찌른 거지. 언니 본인이 직접 느껴보고 싶었던 거 맞아.
-
-> **정경내** *2014-02-01*
-> 윤영쌤이 정확해. 나도 창환이랑 있을 때 그 '황홀경'이란 거 알지. 세미쌤이 굳이 '늘씬한 키에 새하얗고 맑은 피부, 여우상 미녀'까지 디테일하게 묘사한 거 봐. 본인이 느끼는 걸 대입해서 질투한 거라니까. 지는 못 느끼는 줄 알았겠지만 이미 창환이한테 지배당한 지 오래야.
-
-> **박성진** *2014-02-01*
-> 크으... 경내 누나 말 들으니까 더 꼴리네. 그 '늘씬한 키' 여학생보다 세미쌤이 더 낫지 않냐? 겉으론 단아한데 속은 글래머라매. 그걸 창환이 꼬맹이한테 줬다는 게 아깝다. 31살이면 한창때 아니냐? 지금 외로울 때 확 찔러서 넘어뜨릴까?
-
-> **전현우** *2014-02-01*
-> 성진아 그만해라. 아니, 근데 나도 이해는 간다. 그 '뜨거운 밤' 소문 돌 때 창환이 걔 말 들어보면 세미누나 얘기는 1도 없었거든? 진짜 순진한 애인 줄 알았는데 뒤로는...
-
-> **박예성** *2014-02-01*
-> 현우 선배, 그럼 창환이형은 고등부실에서 세미쌤을 어떻게 한 거예요? '뜨거운 숨결'이 가슴에 닿았다는 게... 설마 거기서 키스라도 한 건가요? 그 '큰 것'의 실체도 궁금하고... 메조히스트7 말대로 교회에서 금단의 사과 캬...
-
-> **이기쁨** *2014-02-01*
-> 예성이... 그런 말 함부로 하지 마! ㅠㅠ 근데 저도... '창환이가 2002년부터 쌤 사랑했다'는 부분에서 좀 충격받았어요. 메조히스트6이 '역키잡 각'이라고 한 거 보니까 진짜 드라마 같기도 하고...
-
-> **장윤영** *2014-02-01*
-> 기쁨아, 드라마는 무슨. 그건 그냥 창환이의 수작이야. 2002년에 꼬맹이가 뭘 알았겠어? 그냥 세미언니가 저렇게 '정숙, 순종' 코스프레하느라 철벽 치니까 더 건드리고 싶었던 거지. 내가 볼 때 세미언니는 처음부터 창환이한테 속으로 넘어갔다고 본다.
-
-> **정경내** *2014-02-01*
-> 윤영쌤 말이 진리. '교사로서 마음이 무거웠다'는 거 다 개뻥. '크고 강하고 단단한' 그거에 대한 호기심 인정 안 하는 거 메조히스트2가 깐 거 다 이유가 있다니까. 자기가 그걸 탐하고 있다는 걸 인정하기 싫었던 거지. 푸흡. 가식 쩔어.
-
-> **박성진** *2014-02-01*
-> 세미쌤이 메조히스트9이 말한 것처럼 '창환이한테 매달리고 미련 갖는 게 너무 좋다' 이런 거 보면 진짜 대박이네. 초등교사 이미지 유지하느라 힘들었겠다. 내가 지금이라도 교회에서 슬쩍 찌르면 홀랑 넘어오지 않을까? 진짜 궁금하다.
-
-> **전현우** *2014-02-01*
-> 하... 내가 진짜 바보였네. 창환이한테 계속 세미누나 칭찬했던 내가 병신이지. 그때라도 내가 먼저 세미누나한테 고백했으면... 그 '크고 강하고 단단한' 건 내가 아니었을까? 젠장, 이제 와서 후회해도 늦었겠지.
-
-> **박예성** *2014-02-01*
-> 현우 선배, 그럼 창환이형이 세미쌤을 망가뜨린 건가요? 아니면 세미쌤이 원래 그런 걸 원했던 걸까요? '수치스러웠다'면서 얼굴 빨개지는 거 보면... 뭔가 짜릿함을 느꼈다는 거 아니에요? 메조히스트8 말이 딱 맞네. '크고 강하고 단단한' 그거에 대한 집착이 더 커보인다고.
-
-> **이기쁨** *2014-02-01*
-> 예성아... 너무 무서운 말 하지 마. ㅠㅠ 근데 언니들... '단호하게 선을 그었다'는 세미쌤 말이 진짜 진심이었을까요? 아니면... 창환이형이 더 강하게 밀고 들어오길 바랐던 걸까요? 세미쌤 본심은 뭘까요?
-
-> **장윤영** *2014-02-01*
-> 기쁨이 너도 이제 다 아는구나. '단호하게 선을 그었다'? 그걸 믿냐? 창환이가 2002년부터 사랑 고백했다는 거 자체가 세미언니의 일종의 '메조히스트적 플러팅'이었다고 본다. 내가 볼 때 세미언니는 처음부터 창환이한테 지배당하고 싶어 했어. 그 콧대 높은 언니를 유일하게 꺾을 수 있는 존재가 창환이였던 거지.
-
-> **정경내** *2014-02-01*
-> 윤영쌤 분석 소름. 딱 그거다. 나도 창환이랑 놀아봐서 아는데, 걔는 진짜 여자를 '정복'하고 '지배'하는 데 도가 텄어. 세미쌤이 31살 먹고 아직도 창환이한테 질척이는 거? 지배당하고 싶은 욕구를 끊지 못하는 거지. 푸흡. 불쌍하다기보다 한심해.
-
-> **박성진** *2014-02-01*
-> 그럼 창환이 그 자식은 세미쌤의 그런 걸 정확히 꿰뚫어 본 거네. 진짜 개새끼... 하지만 인정한다. 그 테크닉. 세미쌤, 지금쯤 밤에 침대에서 창환이 그리워하면서 혼자 울고 있겠지? 내가 가서 위로해줄까? 전화번호 아는데.
-
-> **전현우** *2014-02-01*
-> 하... 내가 진짜 바보였네. 창환이한테 계속 세미누나 칭찬했던 내가 병신이지. 그때라도 내가 먼저 세미누나한테 고백했으면... 그 '크고 강하고 단단한' 건 내가 아니었을까? 젠장, 이제 와서 후회해도 늦었겠지. 아니, 아직 늦지 않았을까?
+> **성가대장** *2024.12.11 09:15*
+> 연습 때 늘 일찍 오셔서 준비해주시는 모습 귀감이 됩니다. 이번 성탄 준비도 잘 부탁드려요!
                 `
             },
             {
-                title: "은밀한 고해성사",
+                title: "과거의 기억, 창환이",
                 mainText: `
+### 잊을 수 없는 그 해 여름
 
+문득 예전 기억이 떠오르네요. 제가 아직 30대 초반이었을 때, 교회 고등부 제자였던 **창환**이라는 아이가 있었어요. 겉으로는 마냥 착하고 말 잘 듣는 고3 수험생이었죠. 
+
+***
+
+그런데 어느 날 수련회 때, 우연히 단둘이 창고에서 물건을 정리하게 되었는데... 그 아이가 갑자기 제 손목을 강하게 쥐더군요. 늘 어리게만 보였던 눈빛이 아니었어요. 
+
+> "선생님, 다른 애들이랑 있을 때만큼은 제가 대단한 남자가 된 것 같아서 기분 좋아요. 선생님도 제가 모를 줄 아셨어요?" 
+
+그 순간 심장이 철렁 내려앉으면서도, 등줄기를 타고 오르는 쾌감을 잊을 수가 없어요. 어린 제자에게, 그것도 제가 완벽하게 통제하고 있다고 믿었던 아이에게 순식간에 역전당해 발가벗겨진 듯한 그 감각... 그 좁고 먼지 쌓인 창고 안에서, 저는 처음으로 **'선생님'**이라는 가면을 찢기고 말았습니다.
                 `,
                 cafeComments: `
+**메조히스트9**
+창환이 진짜 요물이네요... 선생님 손목 잡고 그런 말 했다니. 저라면 그 자리에서 다리 풀렸을 듯.
 
+---
+
+**지배자X**
+통제하던 자가 통제당하는 순간의 쾌감... 그게 바로 우리가 여기 모인 이유 아닐까요? 세미 님의 그 고결한 척 하는 표정이 일그러지는 걸 보고 싶군요.
                 `,
                 churchComments: `
+> **김민재(학생)** *2024.11.15 16:20*
+> 선생님 수능 때 기도해주셔서 감사했어요! 덕분에 떨지 않고 잘 쳤습니다.
 
+>> **최집사** *2024.11.15 18:05*
+>> 창환이 녀석 군대 가서도 세미 선생님 안부 묻더군요. 참 훈훈한 사제지간이에요.
                 `
             }
         ];
@@ -411,16 +407,13 @@
         function updateTypography() {
             const targets = document.querySelectorAll('.readable-text');
             targets.forEach(el => {
-                // 기존 클래스 제거
                 for (let i = 0; i < 5; i++) el.classList.remove(`text-size-${i}`);
                 for (let i = 0; i < 3; i++) el.classList.remove(`leading-step-${i}`);
                 
-                // 새 클래스 적용
                 el.classList.add(`text-size-${sizeLevel}`);
                 el.classList.add(`leading-step-${leadingLevel}`);
             });
 
-            // 인디케이터 업데이트 (데스크탑 & 모바일)
             const sizeLabel = sizeLabels[sizeLevel];
             const leadingLabel = leadingLabels[leadingLevel];
             
@@ -452,21 +445,19 @@
             const ep = episodes[currentIndex];
             document.getElementById('post-title').textContent = ep.title;
             
-            // 본문 및 댓글 렌더링
             document.getElementById('main-text').innerHTML = marked.parse(ep.mainText);
             
             const cafeHtml = marked.parse(ep.cafeComments).replace(/<hr>/g, '<div class="comment-divider"></div>');
             document.getElementById('cafe-comments').innerHTML = cafeHtml;
             
-            // 교회 게시판은 이미 커스텀 HTML 구조이므로 직접 삽입
-            document.getElementById('church-comments').innerHTML = ep.churchComments;
+            // Parse church comments from Markdown format
+            document.getElementById('church-comments').innerHTML = parseChurchComments(ep.churchComments);
             
             document.getElementById('page-indicator').textContent = `${currentIndex + 1} / ${episodes.length}`;
             
             document.getElementById('btn-prev').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
             document.getElementById('btn-next').style.visibility = currentIndex === episodes.length - 1 ? 'hidden' : 'visible';
 
-            // 아이콘 및 타이포그래피 즉시 갱신
             lucide.createIcons();
             updateTypography();
             window.scrollTo({ top: 0, behavior: 'smooth' });
