@@ -3,529 +3,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secret Archive 2013 - Son Semi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;400;700;900&family=JetBrains+Mono:wght@200&display=swap" rel="stylesheet">
+    <title>익명의 메조히스트 모임 - 관찰자 아카이브</title>
+    <!-- Tailwind CSS with Typography Plugin for Markdown -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
     <style>
-        :root {
-            --primary: #7a5c44;
-            --bg-dark: #0d0d0d;
-            --card-bg: #161616;
-            --text-dim: #ccc;
-        }
-
+        /* 커스텀 다크 테마 및 스크롤바 */
         body {
-            background-color: var(--bg-dark);
-            color: #e0e0e0;
-            font-family: 'Noto Serif KR', serif;
-            overflow-x: hidden;
+            background-color: #050505;
+            background-image: radial-gradient(circle at 50% 0%, #1a0f14 0%, #050505 70%);
+            background-attachment: fixed;
+            color: #d1d5db;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f0f0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
         }
 
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-
-        /* Background Noise */
-        .noise {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-            opacity: 0.05;
-            pointer-events: none;
-            z-index: 1;
+        /* 텍스트 페이드 인 효과 */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
         }
-
-        .gradient-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 0%, #1a1310 0%, #0d0d0d 70%);
-            z-index: 0;
-        }
-
-        /* Post Content Styling */
-        .post-content h1 {
-            font-size: 2.25rem;
-            font-weight: 900;
-            margin-bottom: 2rem;
-            line-height: 1.2;
-            color: white;
-            border-bottom: 1px solid #333;
-            padding-bottom: 1rem;
-        }
-
-        .post-content p {
-            margin-bottom: 1.5em;
-            color: var(--text-dim);
-            transition: all 0.2s ease;
-        }
-
-        .post-content strong { color: white; font-weight: 700; }
-        .post-content em { color: var(--primary); font-style: italic; }
-
-        /* Comment Components */
-        .comment-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 0.75rem;
-        }
-
-        .cafe-comment-item {
-            border-bottom: 1px solid rgba(122, 92, 68, 0.15);
-            padding: 2rem 0.5rem;
-            transition: background 0.3s;
-        }
-        .cafe-comment-item:hover { background: rgba(122, 92, 68, 0.03); }
-
-        .church-comment-thread {
-            margin-bottom: 2rem;
-        }
-        .church-root-comment {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 1.25rem 1.5rem;
-            border-radius: 16px;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            margin-top: 1.25rem;
-            margin-bottom: 0.5rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        .church-reply-comment {
-            margin-left: 3rem;
-            background: rgba(30, 58, 138, 0.15);
-            padding: 1rem 1.5rem;
-            border-radius: 14px;
-            border-left: 4px solid #3b82f6;
-            position: relative;
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .church-reply-comment::before {
-            content: '└';
-            position: absolute;
-            left: -1.8rem;
-            top: 1rem;
-            color: #3b82f6;
-            font-weight: bold;
-            font-size: 1.4rem;
-        }
-
-        /* Control UI */
-        .ctrl-btn {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 11px;
-            color: #888;
-            transition: all 0.2s;
-        }
-        .ctrl-btn:hover { border-color: var(--primary); color: white; }
-        .ctrl-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade { animation: fadeInUp 0.6s ease-out forwards; }
+
+        /* 글리치 효과 (제목용) */
+        .glitch-hover:hover {
+            text-shadow: 2px 0 red, -2px 0 blue;
+            transition: all 0.2s;
+        }
+
+        /* 마크다운 내부 스타일 정밀 튜닝 */
+        .prose h3 {
+            color: #f3f4f6 !important;
+            border-bottom: 1px solid #7f1d1d;
+            padding-bottom: 0.5rem;
+            margin-top: 2rem !important;
+            letter-spacing: -0.025em;
+        }
+        .prose strong {
+            color: #ffffff !important;
+            font-weight: 800;
+            text-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+        .prose em {
+            color: #a1a1aa !important;
+            font-style: italic;
+        }
+        .prose hr {
+            border-color: #27272a !important;
+            margin: 2.5rem 0 !important;
+        }
+        
+        /* 카페 댓글 커스텀 스타일 (--- 구분선 및 닉네임/날짜) */
+        #cafe-comments hr {
+            border-top: 1px solid #3f3f46;
+            margin: 1.5rem 0;
+            border-bottom: none;
+        }
+        #cafe-comments p > strong:first-child {
+            color: #ef4444; 
+            font-size: 1.05em;
+            margin-right: 0.5rem;
+            display: inline-block;
+        }
+        #cafe-comments p > strong:first-child + em {
+            color: #71717a;
+            font-size: 0.85em;
+            font-style: normal;
+        }
+
+        /* 대구서광교회 댓글 커스텀 스타일 (> 댓글, >> 대댓글) */
+        .church-prose blockquote {
+            border-left: 3px solid #3f3f46;
+            background-color: rgba(63, 63, 70, 0.2);
+            padding: 0.75rem 1rem;
+            margin-top: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            color: #d1d5db;
+            font-style: normal;
+        }
+        .church-prose blockquote blockquote {
+            border-left: 3px solid #71717a;
+            background-color: rgba(113, 113, 122, 0.2);
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        .church-prose blockquote p > strong:first-child {
+            color: #e5e7eb;
+            margin-right: 0.5rem;
+        }
+        .church-prose blockquote p > strong:first-child + em {
+            color: #a1a1aa;
+            font-size: 0.85em;
+            font-style: normal;
+        }
     </style>
 </head>
-<body>
-    <div class="noise"></div>
-    <div class="gradient-bg"></div>
+<body class="font-serif antialiased min-h-screen flex flex-col selection:bg-red-900 selection:text-white">
 
-    <div class="relative z-10">
-        <!-- Sticky Header -->
-        <nav class="sticky top-0 bg-[#0d0d0d]/90 backdrop-blur-md border-b border-[#222] py-4 px-6 shadow-2xl">
-            <div class="max-w-6xl mx-auto flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                    <div class="p-2 bg-[#7a5c44] rounded">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    </div>
-                    <div class="hidden xs:block">
-                        <h1 class="text-sm font-bold text-white tracking-widest uppercase">Secret Archive 2013</h1>
-                        <p class="text-[8px] text-[#666] tracking-[.3em] font-mono">ANONYMOUS MASOCHIST SOCIETY</p>
-                    </div>
+    <!-- Header / Top Bar -->
+    <header class="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-zinc-800 p-4">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i data-lucide="eye" class="text-red-700 w-5 h-5 animate-pulse"></i>
+                <h1 class="text-xs tracking-[0.3em] text-zinc-500 uppercase">Classified Target: <span class="text-zinc-300 font-bold glitch-hover transition-all cursor-default">S.S (1983)</span></h1>
+            </div>
+            <div class="flex items-center space-x-2 text-xs text-zinc-500 font-mono border border-zinc-800 px-2 py-1 rounded bg-zinc-900/50">
+                <i data-lucide="lock" class="w-3 h-3"></i>
+                <span>익명의 메조히스트 모임</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full max-w-5xl mx-auto p-4 md:p-6 lg:p-8 flex flex-col space-y-8" id="content-container">
+        
+        <!-- Post Header -->
+        <div class="border-b border-zinc-800 pb-4 mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <h2 id="post-title" class="text-2xl md:text-3xl font-bold text-zinc-100 tracking-tight mb-2"></h2>
+                <p class="text-sm text-zinc-400 italic">Author: <span class="text-red-800 font-bold tracking-widest uppercase">WhiteLily83</span></p>
+            </div>
+            
+            <!-- 가독성 조절 컨트롤러 -->
+            <div class="flex items-center space-x-3 bg-zinc-900/80 border border-zinc-700 rounded-lg p-2 shadow-lg backdrop-blur self-start md:self-auto shrink-0">
+                <div class="flex items-center space-x-1 border-r border-zinc-700 pr-3">
+                    <i data-lucide="a-large-small" class="w-4 h-4 text-zinc-400 mr-1"></i>
+                    <button onclick="changeTextSize(-1)" class="w-6 h-6 rounded flex items-center justify-center text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors">-</button>
+                    <span id="size-label" class="text-xs font-mono text-zinc-300 w-4 text-center">M</span>
+                    <button onclick="changeTextSize(1)" class="w-6 h-6 rounded flex items-center justify-center text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors">+</button>
                 </div>
-                <div class="flex items-center gap-4 text-right">
-                    <div>
-                        <p class="text-xs font-bold text-[#7a5c44]">Son Semi (1983)</p>
-                        <p class="text-[9px] text-[#444]">Teacher / Church Leader</p>
-                    </div>
-                    <div class="w-9 h-9 rounded-full border border-[#333] bg-[#1a1a1a] flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                    </div>
+                <div class="flex items-center space-x-1 pl-1">
+                    <i data-lucide="align-justify" class="w-4 h-4 text-zinc-400 mr-1"></i>
+                    <button onclick="changeLineHeight(-1)" class="w-6 h-6 rounded flex items-center justify-center text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors">-</button>
+                    <span id="leading-label" class="text-xs font-mono text-zinc-300 w-6 text-center">기본</span>
+                    <button onclick="changeLineHeight(1)" class="w-6 h-6 rounded flex items-center justify-center text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors">+</button>
                 </div>
             </div>
-        </nav>
+        </div>
 
-        <main class="max-w-6xl mx-auto mt-4 md:mt-8 px-4 pb-20">
-            <!-- Appearance Toolbar & Navigation -->
-            <div class="bg-[#161616] border border-[#222] p-4 rounded-2xl mb-6 shadow-2xl flex flex-col md:flex-row justify-between items-center gap-4">
+        <!-- [몸글] Section -->
+        <section class="bg-zinc-900/20 border border-zinc-800 rounded-lg p-6 md:p-10 shadow-2xl relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-1 h-full bg-red-900/30 group-hover:bg-red-700 transition-colors"></div>
+            <div class="flex items-center space-x-2 mb-8 border-b border-zinc-800/50 pb-3">
+                <i data-lucide="file-text" class="text-zinc-500 w-5 h-5"></i>
+                <h3 class="text-lg font-bold text-zinc-400 tracking-[0.4em] uppercase">[ 몸글 ]</h3>
+            </div>
+            <!-- 마크다운 렌더링 영역 -->
+            <div id="main-text" class="prose prose-invert prose-zinc prose-base prose-p:leading-relaxed max-w-none text-justify fade-in transition-all duration-300">
+                <!-- Content Injected by JS -->
+            </div>
+        </section>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between items-center py-4 border-y border-zinc-800/50">
+            <button id="btn-prev" onclick="navigate(-1)" class="flex items-center space-x-2 text-zinc-500 hover:text-white transition-colors disabled:opacity-10 disabled:cursor-not-allowed px-4 py-2 bg-zinc-900/30 rounded border border-zinc-800">
+                <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                <span class="text-sm font-mono uppercase tracking-widest">PREV</span>
+            </button>
+            <span id="page-indicator" class="text-zinc-600 font-mono text-xs tracking-[0.3em]"></span>
+            <button id="btn-next" onclick="navigate(1)" class="flex items-center space-x-2 text-zinc-500 hover:text-white transition-colors disabled:opacity-10 disabled:cursor-not-allowed px-4 py-2 bg-zinc-900/30 rounded border border-zinc-800">
+                <span class="text-sm font-mono uppercase tracking-widest">NEXT</span>
+                <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Comments Grid Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pb-24">
+            
+            <!-- [카페 댓글] Section -->
+            <section class="bg-black/40 border border-zinc-800 rounded-xl p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-6 pb-2 border-b border-zinc-800">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="message-square" class="text-red-900 w-4 h-4"></i>
+                        <h3 class="text-sm font-bold text-zinc-400 tracking-widest uppercase">Secret Comments</h3>
+                    </div>
+                </div>
+                <div id="cafe-comments" class="prose prose-invert prose-base prose-p:leading-relaxed max-w-none fade-in transition-all duration-300">
+                    <!-- Content Injected by JS -->
+                </div>
+            </section>
+
+            <!-- [대구서광교회 댓글] Section -->
+            <section class="bg-zinc-900/10 border border-zinc-800 rounded-xl p-6 shadow-xl relative overflow-hidden">
+                <div class="absolute inset-0 flex items-center justify-center opacity-[0.02] pointer-events-none">
+                    <svg viewBox="0 0 100 100" class="w-48 h-48"><path d="M45,0 L55,0 L55,30 L85,30 L85,40 L55,40 L55,100 L45,100 L45,40 L15,40 L15,30 L45,30 Z" fill="white"/></svg>
+                </div>
                 
-                <!-- Navigation Controls -->
-                <div class="flex items-center gap-2">
-                    <button id="btn-prev" onclick="prevPost()" class="w-8 h-8 rounded-full bg-[#0d0d0d] flex items-center justify-center border border-[#333] hover:border-[#7a5c44] transition-all disabled:opacity-20 disabled:cursor-not-allowed">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    </button>
-                    <div id="entry-counter" class="px-3 py-1.5 bg-[#0d0d0d] rounded-full border border-[#222] font-mono text-[10px] tracking-widest text-[#7a5c44] min-w-[100px] text-center">
-                        ENTRY 01 / 01
-                    </div>
-                    <button id="btn-next" onclick="nextPost()" class="w-8 h-8 rounded-full bg-[#0d0d0d] flex items-center justify-center border border-[#333] hover:border-[#7a5c44] transition-all disabled:opacity-20 disabled:cursor-not-allowed">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                    </button>
-                </div>
-
-                <!-- Text Appearance -->
-                <div class="flex items-center gap-2 hidden lg:flex">
-                    <span class="text-[9px] font-mono text-[#555] uppercase tracking-widest mr-2">Text Control</span>
-                    <button onclick="setProp('fontSize', '1rem', this, 'size')" class="ctrl-btn size-btn">S</button>
-                    <button onclick="setProp('fontSize', '1.15rem', this, 'size')" class="ctrl-btn size-btn active">M</button>
-                    <button onclick="setProp('fontSize', '1.3rem', this, 'size')" class="ctrl-btn size-btn">L</button>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex items-center gap-2">
-                    <button onclick="createNewPost()" class="bg-[#1a1a1a] text-[#7a5c44] border border-[#333] px-4 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-2 hover:bg-[#222] hover:border-[#7a5c44] transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        NEW
-                    </button>
-                    <button onclick="toggleEditor()" class="bg-[#1a1a1a] text-white border border-[#333] px-4 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-2 hover:bg-[#222] transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        EDIT
-                    </button>
-                </div>
-            </div>
-
-            <!-- Viewer -->
-            <div id="viewer" class="animate-fade">
-                <!-- Main Article -->
-                <article class="bg-[#161616] rounded-3xl border border-[#222] shadow-3xl overflow-hidden relative mb-8">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#7a5c44] via-[#3a2c21] to-[#7a5c44]"></div>
-                    <header class="p-6 md:p-12 bg-gradient-to-b from-[#1c1c1c] to-[#161616] border-b border-[#222]">
-                        <h1 class="text-2xl md:text-3xl font-bold text-white leading-tight" id="display-title">
-                            위험한 훈육, 짓눌린 감각... 스며드는 열기 속 교사의 아찔한 자기합리화
-                        </h1>
-                    </header>
-                    <div class="p-6 md:p-12 post-content" id="display-body" style="font-size: 1.15rem; line-height: 2.0;">
-                        <!-- Body content -->
-                    </div>
-                </article>
-
-                <!-- Feedback Grid -->
-                <div class="grid grid-cols-1 gap-12">
-                    <!-- Cafe Comments (Masochist Society) -->
-                    <section class="bg-gradient-to-br from-[#1a1313] to-[#110d0d] border border-red-900/30 rounded-3xl p-8 md:p-12 shadow-2xl">
-                        <h3 class="text-red-500/80 uppercase tracking-[0.2em] font-black text-[14px] mb-10 flex items-center gap-4">
-                            <span class="w-8 h-[1px] bg-red-900/50"></span>
-                            비밀의 정원 : 익명 댓글 리스트
-                            <span class="w-8 h-[1px] bg-red-900/50"></span>
-                        </h3>
-                        <div id="display-cafe" class="space-y-4 text-[#d1c1c1] font-serif" style="font-size: 1.15rem;">
-                            <!-- Cafe comments parsed -->
-                        </div>
-                    </section>
-
-                    <!-- Church Comments (Public Society) -->
-                    <section class="bg-gradient-to-br from-[#0f1216] to-[#08090a] border border-blue-900/20 rounded-3xl p-8 md:p-12 shadow-2xl">
-                        <h3 class="text-blue-500/80 uppercase tracking-[0.2em] font-black text-[14px] mb-10 flex items-center gap-4">
-                            <span class="w-8 h-[1px] bg-blue-900/50"></span>
-                            대구서광교회 고등부 게시판
-                            <span class="w-8 h-[1px] bg-blue-900/50"></span>
-                        </h3>
-                        <div id="display-church" class="text-[#c3ccd8] font-serif" style="font-size: 1.15rem;">
-                            <!-- Church comments parsed -->
-                        </div>
-                    </section>
-                </div>
-            </div>
-
-            <!-- Editor -->
-            <div id="editor" class="hidden animate-fade">
-                <div class="bg-[#161616] p-6 rounded-3xl border border-[#222] shadow-3xl">
-                    <div class="grid gap-4">
-                        <input id="input-title" type="text" placeholder="Title" class="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-3 text-white">
-                        <textarea id="input-body" rows="12" placeholder="Body (Markdown)" class="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-4 font-mono text-sm text-[#aaa]"></textarea>
-                        <div class="grid gap-4">
-                            <div class="flex flex-col gap-2">
-                                <label class="text-[10px] text-[#7a5c44] font-bold uppercase tracking-widest">Cafe Archive (--- separator)</label>
-                                <textarea id="input-cafe" rows="8" class="bg-[#0d0d0d] border border-[#222] rounded-xl p-3 text-xs text-[#aaa] font-mono"></textarea>
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <label class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Church Archive (> and >> hierarchy)</label>
-                                <textarea id="input-church" rows="8" class="bg-[#0d0d0d] border border-[#222] rounded-xl p-3 text-xs text-[#aaa] font-mono"></textarea>
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap gap-2 mt-4 justify-between">
-                            <div class="flex gap-2">
-                                <button onclick="saveChanges()" class="bg-[#7a5c44] text-white px-8 py-3 rounded-full text-xs font-bold hover:brightness-110 transition-all">SAVE ARCHIVE</button>
-                                <button onclick="toggleEditor()" class="bg-[#222] text-white px-8 py-3 rounded-full text-xs font-bold hover:bg-[#333] transition-all">CANCEL</button>
-                            </div>
-                            <button onclick="deletePost()" class="bg-red-900/20 border border-red-900/50 text-red-500 px-6 py-3 rounded-full text-xs font-bold hover:bg-red-900/50 transition-all">DELETE</button>
-                        </div>
+                <div class="flex items-center justify-between mb-6 pb-2 border-b border-zinc-800 relative z-10">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="cross" class="text-zinc-600 w-4 h-4"></i>
+                        <h3 class="text-sm font-bold text-zinc-400 tracking-widest uppercase">Church Board</h3>
                     </div>
                 </div>
-            </div>
-        </main>
-    </div>
+                <div id="church-comments" class="prose prose-invert prose-base prose-p:leading-relaxed max-w-none church-prose fade-in relative z-10 transition-all duration-300">
+                    <!-- Content Injected by JS -->
+                </div>
+            </section>
+        </div>
+    </main>
 
     <script>
-        const STORAGE_KEY = 'secret_archive_2013_posts';
-        let posts = [];
+        lucide.createIcons();
+
+        const episodes = [
+            {
+                title: "은밀한 고해성사 - 01",
+                mainText: `
+### 가식의 껍데기 아래에서
+
+오늘도 무사히 하루가 끝났어요. 아침 일찍부터 하얀 블라우스의 단추를 목 끝까지 채우고, 무릎을 덮는 A라인 스커트를 입은 채 학교로 향했죠. 아이들은 저를 **'천사 같은 선생님'**이라고 부르고, 동료 교사들은 **'참 단아하다'**며 칭찬해요. 제 겉모습은 철저하게 통제되어 있으니까요.
+
+***
+
+주말에는 더 완벽한 연극이 시작돼요. **대구서광교회** 고등부 주일학교 담임교사. 장로님이신 아버지와 권사이신 어머니의 자랑스러운 맏딸. 성가대석에 앉아 두 손을 모으고 찬양을 부를 때면, 제 속에서 끓어오르는 은밀하고 끈적한 갈증을 아무도 눈치채지 못해요.
+
+### 억압된 본능
+
+하지만 여러분은 아시죠? 제가 정숙을 강요받을수록, 누군가 제게 거칠게 명령하고 이 완벽한 껍데기를 찢어발겨 주길 원한다는 걸요. 오늘 낮에 교무실에서 깐깐한 교감 선생님께 불려가 꾸지람을 들을 때... 겉으로는 죄송하다며 고개를 숙이고 있었지만, 속으로는 *'더 심하게, 더 노골적으로 혼내줬으면'* 하고 상상해버렸어요. 
+
+이런 제 자신이 무서우면서도, 이 짜릿한 이중생활을 멈출 수가 없네요.
+                `,
+                cafeComments: `
+**마스터_K** *2024-10-12*
+
+선생님, 겉옷의 단추를 채울 때마다 무슨 생각을 하셨을지 상상하니 정말 흥분되네요. 그 얌전한 스커트 속에 숨겨진 진짜 모습을 확인하고 싶어집니다.
+
+---
+
+**RedVelvet** *2024-10-12*
+
+와... 교회 성가대석에서 그런 상상을 하시다니. 제일 성스러운 곳에서 느끼는 가장 타락한 감정... 최고예요. 다음엔 교감 선생님과의 일화를 더 자세히 풀어주세요.
+                `,
+                churchComments: `
+> **믿음의청년** *2024-10-13*
+> 오늘 고등부 예배 때 손세미 선생님 기도하시는 모습 보고 정말 은혜 많이 받았습니다. 저희 교회의 보배십니다. 🙏
+
+>> **권사님바라기** *2024-10-13*
+>> 장로님 댁 첫째 딸내미는 볼 때마다 참해~ 요새 젊은 아가씨들 답지 않게 옷차림도 단정하고. 우리 아들 며느리 삼고 싶네 정말.
+                `
+            },
+            {
+                title: "과거의 기억, 창환이 - 02",
+                mainText: `
+### 잊을 수 없는 그 해 여름
+
+문득 예전 기억이 떠오르네요. 제가 아직 30대 초반이었을 때, 교회 고등부 제자였던 **창환**이라는 아이가 있었어요. 겉으로는 마냥 착하고 말 잘 듣는 고3 수험생이었죠. 저도 늘 따뜻하게 기도해주고 챙겨주던 착한 쌤이었고요.
+
+***
+
+그런데 어느 날 수련회 때, 우연히 단둘이 창고에서 물건을 정리하게 되었는데... 그 아이가 갑자기 제 손목을 강하게 쥐더군요. 늘 어리게만 보였던 눈빛이 아니었어요. 
+
+> "선생님, 다른 애들이랑 있을 때만큼은 제가 대단한 남자가 된 것 같아서 기분 좋아요. 선생님도 제가 모를 줄 아셨어요?" 
+
+그 순간 심장이 철렁 내려앉으면서도, 등줄기를 타고 오르는 쾌감을 잊을 수가 없어요. 어린 제자에게, 그것도 제가 완벽하게 통제하고 있다고 믿었던 아이에게 순식간에 역전당해 발가벗겨진 듯한 그 감각... 그 좁고 먼지 쌓인 창고 안에서, 저는 처음으로 **'선생님'**이라는 가면을 찢기고 말았습니다.
+
+### 남아있는 낙인
+
+아직도 가끔 창환이의 그 맹수 같던 눈빛이 꿈에 나와 절 괴롭히곤 해요. 그 눈빛은 저에게 이렇게 말하는 것 같아요. **"당신은 결국 내 밑에 있을 때 가장 빛나."** 라고요.
+                `,
+                cafeComments: `
+**메조히스트9** *2013-10-27*
+
+창환이가 '다른 애들이랑 있을 때만큼은 제가 대단한 남자가 된 것 같아서'라고 말한 거 진짜 고수네요. 어린데도 언니 마음 흔드는 방법을 알았다는 게 소름! 31살 선생님이 18살 애한테 놀아난 거 같아서 더 흥분돼요 ㅋㅋㅋ 😂
+
+---
+
+**DarkRoom** *2013-10-27*
+
+수련회 창고... 클리셰 같지만 가장 자극적인 상황이네요. 평소에 존경받던 선생님이 제자 앞에서 무너지는 그 갭모에. 그날 창고에서 무슨 일이 있었는지 더 자세히 듣고 싶습니다.
+                `,
+                churchComments: `
+> **박예성** *2014-02-27*
+> 와, 창환이형 진짜 알파메일이네… 2009년에 고3인데 벌써 저 정도였다니… "풍만한 굴곡이 뭉개지는 생경한 감각" 이 부분에서 진짜 지렸다. 윤영쌤, 세미쌤 그때 표정 어땠어요? 더 자세히 말해주세요!
+
+>> **고등부_현우** *2014-02-27*
+>> 예성아 너 뭐하냐? 여긴 대구서광교회 게시판이다;; 이상한 소설 쓰지 말고 빨리 글 지워라 목사님 보시기 전에.
+                `
+            }
+        ];
+
         let currentIndex = 0;
+        let sizeLevel = 1; 
+        let leadingLevel = 1; 
+        
+        const sizeClasses = ['prose-sm', 'prose-base', 'prose-lg', 'prose-xl'];
+        const leadingClasses = ['prose-p:leading-tight', 'prose-p:leading-relaxed', 'prose-p:leading-loose'];
+        const sizeLabels = ['S', 'M', 'L', 'XL'];
+        const leadingLabels = ['좁게', '기본', '넓게'];
 
-        const initialPost = {
-            title: "",
-            body: ``,
-            cafe: ``,
-            church: ``
-        };
+        const renderer = new marked.Renderer();
+        marked.setOptions({
+            renderer: renderer,
+            breaks: true,
+            gfm: true
+        });
 
-        // Load data on startup
-        window.onload = () => {
-            const savedData = localStorage.getItem(STORAGE_KEY);
-            if (savedData) {
-                try {
-                    posts = JSON.parse(savedData);
-                } catch (e) {
-                    posts = [initialPost];
-                }
-            } else {
-                posts = [initialPost];
-            }
-            updateDisplay();
-        };
-
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-        }
-
-        function parseCafeComments(text) {
-            if (!text) return '';
-            return text.split('---').map(item => {
-                if(!item.trim()) return '';
-                const lines = item.trim().split('\n');
-                const headerLine = lines[0]; 
-                const content = lines.slice(1).join('\n').trim();
-                
-                const nickMatch = headerLine.match(/\*\*(.*?)\*\*/);
-                const dateMatch = headerLine.match(/\*(.*?)\*/);
-                const nick = nickMatch ? nickMatch[1] : 'Unknown';
-                const date = dateMatch ? dateMatch[1] : '';
-
-                return `<div class="cafe-comment-item">
-                    <div class="comment-header">
-                        <span class="px-2 py-0.5 bg-red-900/30 text-red-400 text-[11px] font-bold rounded">MEMB</span>
-                        <span class="text-[16px] font-black text-white/90 tracking-tight">${nick}</span>
-                        <span class="text-[11px] font-mono text-[#555] ml-auto">${date}</span>
-                    </div>
-                    <p class="text-[17px] leading-relaxed text-[#aaa] pl-1 font-light italic">"${content}"</p>
-                </div>`;
-            }).join('');
-        }
-
-        function parseChurchComments(text) {
-            if (!text) return '';
-            const lines = text.split('\n');
-            let html = '';
-            let currentComment = null;
-
-            const flush = () => {
-                if (!currentComment) return;
-                
-                if (currentComment.type === 'announcement') {
-                    html += `<div class="mb-8 p-5 border-l-4 border-blue-600 bg-blue-600/5 rounded-r-xl">
-                        <div class="flex items-center gap-3 mb-2">
-                            <span class="text-[14px] font-black text-white">${currentComment.nick}</span>
-                            <span class="text-[11px] text-[#444] font-mono">${currentComment.date}</span>
-                        </div>
-                        <div class="text-[16px] text-blue-200 font-bold leading-snug">${currentComment.content}</div>
-                    </div>`;
-                } else if (currentComment.type === 'root') {
-                    html += `<div class="church-root-comment">
-                            <div class="comment-header">
-                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                                <span class="text-[15px] font-black text-blue-100">${currentComment.nick}</span>
-                                <span class="text-[10px] font-mono text-white/20 ml-auto">${currentComment.date}</span>
-                            </div>
-                            <p class="text-[17px] leading-relaxed text-white/80 mt-1">${currentComment.content}</p>
-                        </div>`;
-                } else if (currentComment.type === 'reply') {
-                    html += `<div class="church-reply-comment">
-                        <div class="comment-header">
-                            <span class="text-[14px] font-bold text-blue-300/90">${currentComment.nick}</span>
-                            <span class="text-[10px] font-mono text-white/10 ml-auto">${currentComment.date}</span>
-                        </div>
-                        <p class="text-[16px] leading-relaxed text-white/60 font-light mt-1">${currentComment.content}</p>
-                    </div>`;
-                }
-                currentComment = null;
-            };
-
-            lines.forEach(line => {
-                const trimmedLine = line.trim();
-                if (!trimmedLine) {
-                    flush();
-                    return;
-                }
-                
-                let type = 'announcement';
-                let cleanLine = trimmedLine;
-                
-                if (trimmedLine.startsWith('>>')) {
-                    type = 'reply';
-                    cleanLine = trimmedLine.replace(/^>>\s*/, '');
-                } else if (trimmedLine.startsWith('>')) {
-                    type = 'root';
-                    cleanLine = trimmedLine.replace(/^>\s*/, '');
-                }
-
-                const nickMatch = cleanLine.match(/\*\*(.*?)\*\*/);
-                const dateMatch = cleanLine.match(/\*(.*?)\*/);
-
-                if (nickMatch && cleanLine.indexOf(nickMatch[0]) === 0) {
-                    flush();
-                    const nick = nickMatch[1];
-                    const date = dateMatch ? dateMatch[1] : '';
-                    let content = cleanLine.replace(/\*\*.*?\*\*/, '').replace(/\*.*?\*/, '').trim();
-                    currentComment = { type, nick, date, content };
-                } else {
-                    if (currentComment) {
-                        currentComment.content += (currentComment.content ? '<br>' : '') + cleanLine;
-                    } else {
-                        currentComment = { type, nick: 'Unknown', date: '', content: cleanLine };
-                    }
-                }
+        function updateTypography() {
+            const containers = [
+                document.getElementById('main-text'),
+                document.getElementById('cafe-comments'),
+                document.getElementById('church-comments')
+            ];
+            
+            containers.forEach(el => {
+                if(!el) return;
+                sizeClasses.forEach(c => el.classList.remove(c));
+                leadingClasses.forEach(c => el.classList.remove(c));
+                el.classList.add(sizeClasses[sizeLevel]);
+                el.classList.add(leadingClasses[leadingLevel]);
             });
+
+            document.getElementById('size-label').textContent = sizeLabels[sizeLevel];
+            document.getElementById('leading-label').textContent = leadingLabels[leadingLevel];
+        }
+
+        function changeTextSize(step) {
+            sizeLevel = Math.max(0, Math.min(sizeClasses.length - 1, sizeLevel + step));
+            updateTypography();
+        }
+
+        function changeLineHeight(step) {
+            leadingLevel = Math.max(0, Math.min(leadingClasses.length - 1, leadingLevel + step));
+            updateTypography();
+        }
+
+        function renderEpisode(index) {
+            const ep = episodes[index];
+            if (!ep) return;
+
+            const titleEl = document.getElementById('post-title');
+            const mainTextEl = document.getElementById('main-text');
+            const cafeCommentsEl = document.getElementById('cafe-comments');
+            const churchCommentsEl = document.getElementById('church-comments');
+            const indicatorEl = document.getElementById('page-indicator');
+
+            const elements = [mainTextEl, cafeCommentsEl, churchCommentsEl];
+            elements.forEach(el => {
+                el.classList.remove('fade-in');
+                void el.offsetWidth; 
+                el.classList.add('fade-in');
+            });
+
+            titleEl.textContent = ep.title;
+            mainTextEl.innerHTML = marked.parse(ep.mainText);
+            cafeCommentsEl.innerHTML = marked.parse(ep.cafeComments);
+            churchCommentsEl.innerHTML = marked.parse(ep.churchComments);
+
+            indicatorEl.textContent = `DATA LOG #${index + 1} / ${episodes.length}`;
+
+            document.getElementById('btn-prev').disabled = index === 0;
+            document.getElementById('btn-next').disabled = index === episodes.length - 1;
             
-            flush();
-            return html;
+            updateTypography();
         }
 
-        function renderMarkdown(text) {
-            if (!text) return '';
-            return text
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em class="text-[#7a5c44] font-medium">$1</em>')
-                .replace(/### (.*)/g, '<h3 class="text-xl font-black text-white mt-12 mb-6 border-l-4 border-[#7a5c44] pl-4 uppercase tracking-tighter">$1</h3>')
-                .replace(/\n/g, '<br>');
-        }
-
-        function setProp(prop, value, btn, type) {
-            const body = document.getElementById('display-body');
-            body.style[prop] = value;
-            document.querySelectorAll(`.${type}-btn`).forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-
-        function updateDisplay() {
-            if (posts.length === 0) {
-                // If all posts deleted, reset to initial
-                posts = [initialPost];
-                currentIndex = 0;
-                saveData();
-            }
-
-            const currentPost = posts[currentIndex];
-            
-            document.getElementById('display-title').innerText = currentPost.title || '제목 없음';
-            document.getElementById('display-body').innerHTML = renderMarkdown(currentPost.body);
-            document.getElementById('display-cafe').innerHTML = parseCafeComments(currentPost.cafe);
-            document.getElementById('display-church').innerHTML = parseChurchComments(currentPost.church);
-
-            // Update Navigation UI
-            const counter = document.getElementById('entry-counter');
-            counter.innerText = `ENTRY ${String(currentIndex + 1).padStart(2, '0')} / ${String(posts.length).padStart(2, '0')}`;
-
-            const btnPrev = document.getElementById('btn-prev');
-            const btnNext = document.getElementById('btn-next');
-
-            btnPrev.disabled = currentIndex === 0;
-            btnNext.disabled = currentIndex === posts.length - 1;
-        }
-
-        // Navigation Functions
-        function prevPost() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                updateDisplay();
+        function navigate(direction) {
+            const newIndex = currentIndex + direction;
+            if (newIndex >= 0 && newIndex < episodes.length) {
+                currentIndex = newIndex;
+                renderEpisode(currentIndex);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
-        function nextPost() {
-            if (currentIndex < posts.length - 1) {
-                currentIndex++;
-                updateDisplay();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        // Editor Functions
-        function createNewPost() {
-            const newPost = {
-                title: `[${posts.length + 1}] 새로운 기록`,
-                body: "내용을 입력해주세요.",
-                cafe: "**메조히스트N** *201X-XX-XX*\n댓글 내용을 입력해주세요.\n---\n",
-                church: "> **이름** *201X-XX-XX*\n> 댓글 내용을 입력해주세요.\n>> **이름2** *201X-XX-XX*\n>> 대댓글을 입력해주세요."
-            };
-            
-            posts.push(newPost);
-            currentIndex = posts.length - 1;
-            
-            // Automatically open editor for the new post
-            const e = document.getElementById('editor');
-            if (e.classList.contains('hidden')) {
-                toggleEditor();
-            } else {
-                // If already in editor, just reload the inputs
-                document.getElementById('input-title').value = posts[currentIndex].title;
-                document.getElementById('input-body').value = posts[currentIndex].body;
-                document.getElementById('input-cafe').value = posts[currentIndex].cafe;
-                document.getElementById('input-church').value = posts[currentIndex].church;
-            }
-            saveData();
-        }
-
-        function toggleEditor() {
-            const v = document.getElementById('viewer');
-            const e = document.getElementById('editor');
-            if (e.classList.contains('hidden')) {
-                document.getElementById('input-title').value = posts[currentIndex].title || '';
-                document.getElementById('input-body').value = posts[currentIndex].body || '';
-                document.getElementById('input-cafe').value = posts[currentIndex].cafe || '';
-                document.getElementById('input-church').value = posts[currentIndex].church || '';
-                v.classList.add('hidden'); 
-                e.classList.remove('hidden');
-                window.scrollTo(0,0);
-            } else {
-                v.classList.remove('hidden'); 
-                e.classList.add('hidden');
-            }
-        }
-
-        function saveChanges() {
-            posts[currentIndex] = {
-                title: document.getElementById('input-title').value,
-                body: document.getElementById('input-body').value,
-                cafe: document.getElementById('input-cafe').value,
-                church: document.getElementById('input-church').value
-            };
-            saveData();
-            updateDisplay(); 
-            toggleEditor();
-        }
-
-        function deletePost() {
-            if(confirm("정말로 이 기록을 삭제하시겠습니까?")) {
-                posts.splice(currentIndex, 1);
-                if(currentIndex >= posts.length) {
-                    currentIndex = Math.max(0, posts.length - 1);
-                }
-                saveData();
-                updateDisplay();
-                toggleEditor(); // Close editor after delete
-            }
-        }
-
+        window.onload = () => {
+            renderEpisode(currentIndex);
+        };
     </script>
 </body>
 </html>
