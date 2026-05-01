@@ -1,21 +1,297 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  ChevronLeft, ChevronRight, Plus, Trash2, Edit3, 
-  Save, Lock, Layout, User, Heart, Eye, 
-  Calendar, BookOpen, Settings, MessageSquare, AlertCircle
-} from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Archive 2013 - Son Semi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;400;700;900&family=JetBrains+Mono:wght@200&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7a5c44;
+            --bg-dark: #0d0d0d;
+            --card-bg: #161616;
+            --text-dim: #ccc;
+        }
 
-const App = () => {
-  const appId = typeof __app_id !== 'undefined' ? __app_id : 'semi-secret-2013';
+        body {
+            background-color: var(--bg-dark);
+            color: #e0e0e0;
+            font-family: 'Noto Serif KR', serif;
+            overflow-x: hidden;
+        }
 
-  const initialPosts = [
-    {
-      id: 1,
-      title: "제 1화: 위험한 훈육, 짓눌린 감각... 스며드는 열기 속 교사의 아찔한 자기합리화 (Ft. 최창환)",
-      date: "2013.04.15",
-      bodyContent: `# [1] 위험한 훈육, 짓눌린 감각... 스며드는 열기 속 교사의 아찔한 자기합리화 (Ft. 최창환)
-**장윤영:** 언니, 다시 2009년 4월로 돌아가죠. 그날 벚꽃이 참 예뻤다고 들었어요. 오후 4시, 교회가 한산해진 고등부실에서 최창환 군을 기다리고 있었다고요? 직접 PC방까지 연락해서 불러냈다고 하셨죠?
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Grainy noise overlay */
+        .noise {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .gradient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 0%, #1a1310 0%, #0d0d0d 70%);
+            z-index: 0;
+        }
+
+        /* Post Content Styling with Dynamic Controls */
+        .post-content h1 {
+            font-size: 2.25rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            line-height: 1.2;
+            color: white;
+            border-bottom: 1px solid #333;
+            padding-bottom: 1rem;
+        }
+
+        .post-content p {
+            margin-bottom: 1.5em;
+            color: var(--text-dim);
+            transition: all 0.2s ease;
+        }
+
+        .post-content strong {
+            color: white;
+            font-weight: 700;
+        }
+
+        .post-content em {
+            color: var(--primary);
+            font-style: italic;
+        }
+
+        .post-content blockquote {
+            border-left: 3px solid var(--primary);
+            padding: 1.5rem 2rem;
+            margin: 2.5rem 0;
+            background: rgba(122, 92, 68, 0.05);
+            font-style: italic;
+            color: #999;
+        }
+
+        /* Feedback Area Styling */
+        .feedback-item {
+            transition: all 0.2s ease;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #0d0d0d; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        .btn-action {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(122, 92, 68, 0.4);
+        }
+
+        /* Control Button Style */
+        .ctrl-btn {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #888;
+            transition: all 0.2s;
+        }
+        .ctrl-btn:hover {
+            border-color: var(--primary);
+            color: white;
+        }
+        .ctrl-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="gradient-bg"></div>
+
+    <div class="relative z-10">
+        <!-- Sticky Header -->
+        <nav class="sticky top-0 bg-[#0d0d0d]/90 backdrop-blur-md border-b border-[#222] py-4 px-6 shadow-2xl">
+            <div class="max-w-6xl mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="p-2 bg-[#7a5c44] rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </div>
+                    <div class="hidden xs:block">
+                        <h1 class="text-sm md:text-lg font-bold text-white tracking-widest uppercase">Secret Archive 2013</h1>
+                        <p class="text-[8px] md:text-[9px] text-[#666] tracking-[.3em] font-mono">ANONYMOUS MASOCHIST SOCIETY</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-[#7a5c44]">Son Semi (1983)</p>
+                        <p class="text-[10px] text-[#444]">Teacher / Church Leader</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full border border-[#333] bg-[#1a1a1a] flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#444]"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="max-w-6xl mx-auto mt-4 md:mt-8 px-4 pb-20">
+            <!-- Toolbar & Controls -->
+            <div class="bg-[#161616] border border-[#222] p-4 rounded-2xl mb-6 shadow-2xl">
+                <div class="flex flex-col lg:flex-row gap-6 justify-between lg:items-center">
+                    <!-- Nav Controls -->
+                    <div class="flex items-center gap-3 order-2 lg:order-1">
+                        <button class="w-10 h-10 rounded-full bg-[#0d0d0d] flex items-center justify-center border border-[#333] opacity-20 cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <div class="px-4 py-2 bg-[#0d0d0d] rounded-full border border-[#222] font-mono text-[10px] tracking-widest text-[#7a5c44]">
+                            ENTRY 01 / 01
+                        </div>
+                        <button class="w-10 h-10 rounded-full bg-[#0d0d0d] flex items-center justify-center border border-[#333] opacity-20 cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                        <button onclick="toggleEditor()" class="ml-auto lg:ml-2 btn-action bg-[#1a1a1a] text-white border border-[#333] px-4 py-2 rounded-full text-[10px] font-bold flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            EDIT
+                        </button>
+                    </div>
+
+                    <!-- Appearance Controls -->
+                    <div class="flex flex-wrap items-center gap-6 order-1 lg:order-2 border-b lg:border-b-0 border-[#222] pb-4 lg:pb-0">
+                        <!-- Text Size -->
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] font-mono text-[#444] uppercase tracking-widest">Text Size</span>
+                            <div class="flex gap-1">
+                                <button onclick="setProp('fontSize', '1rem', this, 'size')" class="ctrl-btn size-btn">S</button>
+                                <button onclick="setProp('fontSize', '1.15rem', this, 'size')" class="ctrl-btn size-btn active">M</button>
+                                <button onclick="setProp('fontSize', '1.3rem', this, 'size')" class="ctrl-btn size-btn">L</button>
+                            </div>
+                        </div>
+                        <!-- Line Height -->
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] font-mono text-[#444] uppercase tracking-widest">Spacing</span>
+                            <div class="flex gap-1">
+                                <button onclick="setProp('lineHeight', '1.6', this, 'line')" class="ctrl-btn line-btn">Compact</button>
+                                <button onclick="setProp('lineHeight', '2', this, 'line')" class="ctrl-btn line-btn active">Normal</button>
+                                <button onclick="setProp('lineHeight', '2.4', this, 'line')" class="ctrl-btn line-btn">Wide</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Post Area -->
+            <div id="viewer" class="animate-fade">
+                <article class="bg-[#161616] rounded-3xl border border-[#222] shadow-3xl overflow-hidden relative mb-8">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#7a5c44] via-[#3a2c21] to-[#7a5c44]"></div>
+                    
+                    <header class="p-6 md:p-12 bg-gradient-to-b from-[#1c1c1c] to-[#161616] border-b border-[#222]">
+                        <div class="flex items-center gap-3 text-[#7a5c44] mb-4 flex-wrap">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            <span class="text-[10px] md:text-xs font-mono tracking-tighter">2013.04.15</span>
+                            <span class="w-1 h-1 bg-[#333] rounded-full hidden xs:block"></span>
+                            <span class="text-[10px] bg-[#222] px-3 py-1 rounded-full text-[#666]">ENTRY #001_SEMI</span>
+                        </div>
+                        <h1 class="text-2xl md:text-4xl font-bold text-white leading-tight" id="display-title">
+                            [1] 위험한 훈육, 짓눌린 감각... 스며드는 열기 속 교사의 아찔한 자기합리화 (Ft. 최창환)
+                        </h1>
+                    </header>
+
+                    <div class="p-6 md:p-16 post-content" id="display-body" style="font-size: 1.15rem; line-height: 2;">
+                        <!-- Content injected here -->
+                    </div>
+
+                    <div class="px-6 pb-6 flex justify-end">
+                        <div class="bg-[#0d0d0d] p-3 rounded-xl border border-[#222] flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="red" fill="red"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            <span class="text-[9px] text-[#555] font-mono tracking-tighter">AUTHENTICATED BY SEMI_83</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Feedback Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                    <div class="bg-gradient-to-br from-[#1a1313] to-[#110d0d] border border-red-900/30 rounded-3xl p-6 md:p-8 shadow-xl">
+                        <h3 class="text-red-500/80 uppercase tracking-widest font-bold text-[10px] mb-4 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            Secret Cafe Feedback
+                        </h3>
+                        <div class="text-[#a89393] font-serif italic space-y-4 feedback-item" id="display-cafe" style="font-size: 0.9rem;">
+                            <!-- Comments injected here -->
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-[#13161a] to-[#0d0f11] border border-blue-900/30 rounded-3xl p-6 md:p-8 shadow-xl">
+                        <h3 class="text-blue-500/80 uppercase tracking-widest font-bold text-[10px] mb-4 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            Church Community
+                        </h3>
+                        <div class="text-[#939ca8] font-serif space-y-4 feedback-item" id="display-church" style="font-size: 0.9rem;">
+                            <!-- Comments injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor Area -->
+            <div id="editor" class="hidden animate-fade">
+                <div class="bg-[#161616] p-6 md:p-8 rounded-3xl border border-[#222] space-y-6 shadow-3xl">
+                    <div>
+                        <label class="text-[10px] font-bold text-[#444] uppercase tracking-widest mb-2 block">Article Title</label>
+                        <input id="input-title" type="text" class="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-4 text-white focus:border-[#7a5c44] outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-[#444] uppercase tracking-widest mb-2 block">Main Content (Body)</label>
+                        <textarea id="input-body" rows="12" class="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-5 font-mono text-sm text-[#aaa] focus:border-[#7a5c44] outline-none"></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-[10px] font-bold text-[#444] uppercase tracking-widest mb-2 block">Cafe Comments</label>
+                            <textarea id="input-cafe" rows="5" class="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-4 text-xs text-[#aaa] focus:border-[#7a5c44] outline-none"></textarea>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-[#444] uppercase tracking-widest mb-2 block">Church Comments</label>
+                            <textarea id="input-church" rows="5" class="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-4 text-xs text-[#aaa] focus:border-[#7a5c44] outline-none"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <button onclick="saveChanges()" class="flex-1 md:flex-none bg-[#7a5c44] text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg shadow-[#7a5c4433] hover:brightness-125 transition-all">SAVE ARCHIVE</button>
+                        <button onclick="toggleEditor()" class="flex-1 md:flex-none bg-[#222] text-white px-8 py-3 rounded-full text-sm font-bold hover:bg-[#333] transition-all">CANCEL</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="py-12 md:py-20 text-center px-4">
+            <div class="w-12 h-1 bg-[#222] mx-auto mb-8"></div>
+            <p class="text-[10px] text-[#444] font-mono tracking-[0.4em] uppercase mb-2">Encrypted Data Transmission Protocol v.2013</p>
+            <p class="text-[10px] md:text-xs italic text-[#2a2a2a]">"가면 뒤의 숨결은 오직 이곳에서만 허락됩니다."</p>
+        </footer>
+    </div>
+
+    <script>
+        let contentData = {
+            title: "# [1] 위험한 훈육, 짓눌린 감각... 스며드는 열기 속 교사의 아찔한 자기합리화 (Ft. 최창환)",
+            body: `**장윤영:** 언니, 다시 2009년 4월로 돌아가죠. 그날 벚꽃이 참 예뻤다고 들었어요. 오후 4시, 교회가 한산해진 고등부실에서 최창환 군을 기다리고 있었다고요? 직접 PC방까지 연락해서 불러냈다고 하셨죠?
 
 **손세미:** 후... 윤영아, 네가 자꾸 그렇게 짓궂게 나오니까 더 말하기가... (얼굴을 붉히며) 응, 그랬어. 그 아이가 인근 PC방에 있다는 소식을 듣고 잠시 들러달라고 청했지. 교인들 발길이 뜸한 시간대라 조용히 얘기하기 좋을 것 같아서... *(지금 생각해도 내가 무슨 생각으로 그랬는지. ㅠㅠ)*
 
@@ -45,7 +321,7 @@ const App = () => {
 
 **장윤영:** 자, 그럼 드디어 그 순간이네요. 최창환 군이 고등부실 문을 열고 들어섰을 때, 언니는 어떤 표정으로, 어떤 마음으로 그 아이를 맞았나요?
 
-**손세미:** 나는 애써 침착한 표정을 지으려고 노력했어. 단호하면서도, 그 아이 마음에 상처를 주지 않도록 부드러운 어조로 말했지. "창환아... 선생님은 네가, 더 이상 네 몸을 그렇게 함부로 굴리지 않았으면 좋겠어." 라고. 정말 교육자로서의 마지막 경고였어.
+**손세미:** 나는 애써 침착한 표정을 지으려고 노력했어. 단호하면서도, 그 아이 마음에 상처를 주지 않도록 부드운 어조로 말했지. "창환아... 선생님은 네가, 더 이상 네 몸을 그렇게 함부로 굴리지 않았으면 좋겠어." 라고. 정말 교육자로서의 마지막 경고였어.
 
 **장윤영:** 그 아이는 어떤 반응이었나요? 바로 반성하던가요?
 
@@ -84,349 +360,78 @@ const App = () => {
 어쩌면 나는, 그 완벽한 교사라는 가면 뒤에 숨겨진 '손세미'라는 여자의 본능을 그때 처음으로 직면했을지도 모르겠다. 정숙한 척, 고결한 척했지만, 사실은 나도 그저 피 끓는 27살의 '여자'였고... 어린 소년의 거친 남성성에 본능적으로 반응했던 건 아닐까. *(젠장, 타이핑을 치는 지금도 그때의 느낌에 아래가 꿉꿉해지는 것 같아. ㅎㅎ 진짜 미쳤나 봐 ㅠㅠ)*
 
 그때의 나는 분명 완벽한 선생님인 척했지만... 사실은 그 누구보다 '음탕한' 감정들을 억누르고 있었다는 걸 이제야 인정한다. 그 찰나의 순간... 제자 사랑이라는 거룩한 명분 아래... 가장 뜨거운 '여성'으로 살았던 27살의 내가... 참... 좋았다. 그리워... 흑. 지금 31살, 결혼적령기에 솔로라는 민망한 현실과는 너무도 동떨어진... 아련한 추억이다. 다음 이야기는... 좀 더 솔직해져야 할까? *(괜히 시작했어. 나 어떡해 진짜...)*`,
-      cafeComments: "### [카페 댓글]\n\n* **비밀의정원**: 세미님... 세상에... 가슴이 너무 뛰어서 끝까지 읽기가 힘들었어요. 교실에서의 그 압박감, 저도 느꼈던 것 같아요.\n* **DeepPurple**: '교육자적 희생'이라는 단어가 이렇게 관능적으로 들릴 줄이야. 창환이라는 친구, 정말 부럽네요.\n* **안개꽃**: 선생님 블라우스가 젖어들 정도로 뜨거운 숨결이었다니... 상상만 해도 아래가 찌릿해요.",
-      churchComments: "### [대구서광교회 댓글]\n\n* **박권사**: 세미 선생님, 지난주 성경학교 준비하시느라 고생 많으셨죠? 항상 기도하고 있어요.\n* **이장로**: 손선생의 그 헌신적인 태도가 우리 교회 고등부를 살리는 거야. 허허.\n* **교회언니**: 세미야, 이번 주에 선자리 하나 들어왔는데 생각 있니? 참한 규수라고 소문이 자자해."
-    }
-  ];
+            cafe: `* **비밀의정원**: 세미님... 세상에... 가슴이 너무 뛰어서 끝까지 읽기가 힘들었어요. 교실에서의 그 압박감, 저도 느꼈던 것 같아요.
+* **DeepPurple**: '교육자적 희생'이라는 단어가 이렇게 관능적으로 들릴 줄이야. 창환이라는 친구, 정말 부럽네요.`,
+            church: `* **박권사**: 세미 선생님, 항상 기도하고 있어요. 우리 고등부의 보배십니다.
+* **교회언니**: 세미야, 이번 주 선자리 잊지 않았지? 기대해!`
+        };
 
-  const [posts, setPosts] = useState(() => {
-    const saved = localStorage.getItem('semi_secret_v3');
-    return saved ? JSON.parse(saved) : initialPosts;
-  });
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editPost, setEditPost] = useState(posts[0]);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
-  useEffect(() => {
-    localStorage.setItem('semi_secret_v3', JSON.stringify(posts));
-  }, [posts]);
-
-  const handlePostChange = (index) => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentIndex(index);
-      setEditPost(posts[index]);
-      setIsTransitioning(false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 400);
-  };
-
-  const handleNext = () => currentIndex < posts.length - 1 && handlePostChange(currentIndex + 1);
-  const handlePrev = () => currentIndex > 0 && handlePostChange(currentIndex - 1);
-
-  const handleAddNew = () => {
-    const newPost = {
-      id: Date.now(),
-      title: `제 ${posts.length + 1}화: 제목을 입력하세요`,
-      date: new Date().toLocaleDateString(),
-      bodyContent: "### [몸글]\n\n여기에 마크다운 내용을 붙여넣으세요.",
-      cafeComments: "### [카페 댓글]\n\n여기에 마크다운 내용을 붙여넣으세요.",
-      churchComments: "### [대구서광교회 댓글]\n\n여기에 마크다운 내용을 붙여넣으세요."
-    };
-    const newPosts = [...posts, newPost];
-    setPosts(newPosts);
-    handlePostChange(newPosts.length - 1);
-    setIsEditing(true);
-  };
-
-  const handleSave = () => {
-    const updated = [...posts];
-    updated[currentIndex] = editPost;
-    setPosts(updated);
-    setIsEditing(false);
-  };
-
-  const currentPost = posts[currentIndex] || posts[0];
-
-  return (
-    <div className="min-h-screen bg-[#0d0d0d] text-[#e0e0e0] font-sans selection:bg-[#7a5c44] selection:text-white pb-20">
-      {/* Dynamic Background Effects */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1a1310] via-[#0d0d0d] to-[#0d0d0d]"></div>
-        <div className="absolute inset-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-      </div>
-
-      {/* Persistent Header */}
-      <nav className="sticky top-0 z-40 bg-[#0d0d0d]/90 backdrop-blur-md border-b border-[#222] py-4 px-6 shadow-2xl">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="p-2 bg-[#7a5c44] rounded shadow-[0_0_20px_rgba(122,92,68,0.4)]">
-              <Lock size={20} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-lg font-serif font-bold text-white tracking-widest uppercase">Secret Archive 2013</h1>
-              <p className="text-[9px] text-[#666] tracking-[.3em] font-mono">ANONYMOUS MASOCHIST SOCIETY</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:block text-right">
-              <p className="text-xs font-bold text-[#7a5c44]">Son Semi (1983)</p>
-              <p className="text-[10px] text-[#444]">Teacher / Church Leader</p>
-            </div>
-            <div className="w-10 h-10 rounded-full border border-[#333] bg-[#1a1a1a] flex items-center justify-center group cursor-pointer hover:border-[#7a5c44] transition-colors">
-              <User size={20} className="text-[#444] group-hover:text-[#7a5c44]" />
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <main className="relative z-10 max-w-6xl mx-auto mt-8 px-4">
-        {/* Navigation Toolbar */}
-        <div className="bg-[#161616] border border-[#222] p-4 rounded-2xl mb-8 flex flex-wrap justify-between items-center gap-4 shadow-2xl">
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={handlePrev} 
-              disabled={currentIndex === 0 || isEditing}
-              className="w-10 h-10 rounded-full bg-[#0d0d0d] flex items-center justify-center border border-[#333] hover:border-[#7a5c44] disabled:opacity-20 transition-all active:scale-90"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <div className="px-6 py-2 bg-[#0d0d0d] rounded-full border border-[#222] font-mono text-[11px] tracking-widest text-[#7a5c44]">
-              ENTRY {String(currentIndex + 1).padStart(2, '0')} / {String(posts.length).padStart(2, '0')}
-            </div>
-            <button 
-              onClick={handleNext} 
-              disabled={currentIndex === posts.length - 1 || isEditing}
-              className="w-10 h-10 rounded-full bg-[#0d0d0d] flex items-center justify-center border border-[#333] hover:border-[#7a5c44] disabled:opacity-20 transition-all active:scale-90"
-            >
-              <ChevronRight size={20} />
-            </button>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {isEditing ? (
-              <>
-                <button onClick={handleSave} className="bg-[#7a5c44] text-white px-6 py-2 rounded-full text-xs font-bold hover:brightness-125 transition-all flex items-center gap-2 shadow-lg shadow-[#7a5c4433]">
-                  <Save size={14} /> SAVE CHANGES
-                </button>
-                <button onClick={() => setIsEditing(false)} className="bg-[#222] text-white px-6 py-2 rounded-full text-xs font-bold hover:bg-[#333] transition-all">
-                  CANCEL
-                </button>
-              </>
-            ) : (
-              <>
-                <button onClick={handleAddNew} className="bg-[#1a1a1a] text-white border border-[#333] px-6 py-2 rounded-full text-xs font-bold hover:bg-[#222] transition-all flex items-center gap-2">
-                  <Plus size={14} /> NEW ENTRY
-                </button>
-                <button onClick={() => setIsEditing(true)} className="bg-[#1a1a1a] text-white border border-[#333] px-6 py-2 rounded-full text-xs font-bold hover:bg-[#222] transition-all flex items-center gap-2">
-                  <Edit3 size={14} /> EDIT
-                </button>
-                <button onClick={() => posts.length > 1 && setPosts(posts.filter((_, i) => i !== currentIndex))} className="p-2 text-[#444] hover:text-red-500 transition-colors">
-                  <Trash2 size={18} />
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Content Body */}
-        <div className={`transition-all duration-500 ease-out ${isTransitioning ? 'opacity-0 translate-y-10 scale-[0.98]' : 'opacity-100 translate-y-0 scale-100'}`}>
-          {isEditing ? (
-            /* Editor Interface */
-            <div className="space-y-6 bg-[#161616] p-8 rounded-3xl border border-[#222] shadow-3xl">
-              <div>
-                <label className="text-[10px] font-bold text-[#444] uppercase tracking-widest mb-2 block">Series Title</label>
-                <input 
-                  type="text" 
-                  value={editPost.title} 
-                  onChange={(e) => setEditPost({...editPost, title: e.target.value})}
-                  className="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-4 text-xl font-serif text-white focus:border-[#7a5c44] outline-none transition-all"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-bold text-[#444] uppercase tracking-widest mb-2 block">[몸글] (Markdown Supported)</label>
-                <textarea 
-                  rows={15}
-                  value={editPost.bodyContent}
-                  onChange={(e) => setEditPost({...editPost, bodyContent: e.target.value})}
-                  className="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-5 font-mono text-sm text-[#aaa] focus:border-[#7a5c44] outline-none transition-all leading-relaxed"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-[10px] font-bold text-[#444] uppercase tracking-widest mb-2 block">[카페 댓글]</label>
-                  <textarea 
-                    rows={8}
-                    value={editPost.cafeComments}
-                    onChange={(e) => setEditPost({...editPost, cafeComments: e.target.value})}
-                    className="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-4 font-mono text-xs text-[#aaa] focus:border-[#7a5c44] outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] font-bold text-[#444] uppercase tracking-widest mb-2 block">[교회 댓글]</label>
-                  <textarea 
-                    rows={8}
-                    value={editPost.churchComments}
-                    onChange={(e) => setEditPost({...editPost, churchComments: e.target.value})}
-                    className="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-4 font-mono text-xs text-[#aaa] focus:border-[#7a5c44] outline-none"
-                  />
-                </div>
-              </div>
-            </div>
-          ) : (
-            /* Viewer Interface */
-            <div className="space-y-8">
-              {/* Main Article Container */}
-              <article className="bg-[#161616] rounded-3xl border border-[#222] shadow-3xl overflow-hidden relative">
-                {/* Decorative Elements */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#7a5c44] via-[#3a2c21] to-[#7a5c44]"></div>
-                
-                <header className="p-8 md:p-12 bg-gradient-to-b from-[#1c1c1c] to-[#161616] border-b border-[#222]">
-                  <div className="flex items-center gap-3 text-[#7a5c44] mb-4">
-                    <Calendar size={16} />
-                    <span className="text-xs font-mono tracking-tighter uppercase">{currentPost.date}</span>
-                    <span className="w-1 h-1 bg-[#333] rounded-full"></span>
-                    <div className="flex items-center gap-1.5 text-[10px] bg-[#222] px-3 py-1 rounded-full text-[#666]">
-                      <Eye size={12} /> {2013 + (currentIndex * 42)} Views
-                    </div>
-                  </div>
-                  <h2 className="text-3xl md:text-4xl font-serif font-bold text-white leading-tight tracking-tight">
-                    {currentPost.title}
-                  </h2>
-                </header>
-
-                <div className="p-8 md:p-16 prose prose-invert max-w-none">
-                  <div className="markdown-content font-serif text-lg md:text-xl leading-[1.8] text-[#ccc]">
-                    <ReactMarkdown>{currentPost.bodyContent}</ReactMarkdown>
-                  </div>
-                </div>
-                
-                <div className="px-8 pb-8 flex justify-end">
-                  <div className="bg-[#0d0d0d] p-4 rounded-xl border border-[#222] flex items-center gap-3">
-                    <div className="w-8 h-8 rounded bg-[#7a5c44]/20 flex items-center justify-center">
-                      <Heart size={16} className="text-[#7a5c44]" />
-                    </div>
-                    <span className="text-[10px] text-[#555] font-mono tracking-tighter">AUTHENTICATED BY SEMI_83</span>
-                  </div>
-                </div>
-              </article>
-
-              {/* Feedback Dual View */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Secret Cafe Feedback */}
-                <div className="bg-gradient-to-br from-[#1a1313] to-[#110d0d] border border-red-900/30 rounded-3xl p-8 shadow-xl relative group">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3 text-red-500/80 uppercase tracking-[.2em] font-bold text-xs">
-                      <MessageSquare size={18} />
-                      <span>Masochist Society</span>
-                    </div>
-                    <AlertCircle size={16} className="text-red-900/50" />
-                  </div>
-                  <div className="prose prose-invert prose-sm text-[#a89393] font-serif leading-loose italic">
-                    <ReactMarkdown>{currentPost.cafeComments}</ReactMarkdown>
-                  </div>
-                  <div className="mt-6 pt-4 border-t border-red-900/10 text-[9px] text-red-900 font-mono tracking-widest text-right">
-                    FOR MEMBERS ONLY
-                  </div>
-                </div>
-
-                {/* Church Feedback */}
-                <div className="bg-gradient-to-br from-[#13161a] to-[#0d0f11] border border-blue-900/30 rounded-3xl p-8 shadow-xl relative group">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3 text-blue-500/80 uppercase tracking-[.2em] font-bold text-xs">
-                      <User size={18} />
-                      <span>Church Community</span>
-                    </div>
-                    <Lock size={16} className="text-blue-900/50" />
-                  </div>
-                  <div className="prose prose-invert prose-sm text-[#939ca8] font-serif leading-loose">
-                    <ReactMarkdown>{currentPost.churchComments}</ReactMarkdown>
-                  </div>
-                  <div className="mt-6 pt-4 border-t border-blue-900/10 text-[9px] text-blue-900 font-mono tracking-widest text-right">
-                    PUBLIC RELATIONS
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </main>
-
-      <footer className="max-w-6xl mx-auto py-20 px-6 text-center">
-        <div className="w-12 h-1 bg-[#222] mx-auto mb-8"></div>
-        <div className="flex justify-center gap-6 mb-6 text-[#333]">
-          <Settings size={20} className="hover:text-[#7a5c44] cursor-pointer transition-colors" />
-          <Lock size={20} className="hover:text-[#7a5c44] cursor-pointer transition-colors" />
-          <Heart size={20} className="hover:text-[#7a5c44] cursor-pointer transition-colors" />
-        </div>
-        <p className="text-[10px] text-[#444] font-mono tracking-[0.4em] uppercase mb-2">
-          Encrypted Data Transmission Protocol v.2013
-        </p>
-        <p className="text-xs italic text-[#2a2a2a]">
-          "가면 뒤의 숨결은 오직 이곳에서만 허락됩니다."
-        </p>
-      </footer>
-
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;400;700;900&family=JetBrains+Mono:wght@200&display=swap');
-        
-        body { background-color: #0d0d0d; }
-        .font-serif { font-family: 'Noto Serif KR', serif; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-
-        .markdown-content blockquote {
-          border-left: 2px solid #7a5c44;
-          padding-left: 2rem;
-          margin: 3rem 0;
-          color: #777;
-          font-style: italic;
-          background: rgba(122, 92, 68, 0.03);
-          padding-top: 1.5rem;
-          padding-bottom: 1.5rem;
+        function renderMarkdown(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/### (.*)/g, '<h3 class="text-xl font-bold text-white mt-12 mb-6">$1</h3>')
+                .replace(/# (.*)/g, '') // Hide redundant header
+                .replace(/\n/g, '<br>');
         }
 
-        .markdown-content h1 {
-          color: #fff;
-          font-weight: 900;
-          font-size: 2.2rem;
-          margin-bottom: 2rem;
-          border-bottom: 1px solid #333;
-          padding-bottom: 1rem;
+        function setProp(prop, value, btn, type) {
+            const body = document.getElementById('display-body');
+            const cafe = document.getElementById('display-cafe');
+            const church = document.getElementById('display-church');
+            
+            // Adjust body content
+            body.style[prop] = value;
+            
+            // Adjust feedback content (proportionally)
+            if (prop === 'fontSize') {
+                const numericValue = parseFloat(value);
+                const feedbackSize = (numericValue * 0.8) + "rem";
+                cafe.style.fontSize = feedbackSize;
+                church.style.fontSize = feedbackSize;
+            } else if (prop === 'lineHeight') {
+                cafe.style.lineHeight = value;
+                church.style.lineHeight = value;
+            }
+
+            // Update UI
+            document.querySelectorAll(`.${type}-btn`).forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         }
 
-        .markdown-content h3 {
-          color: #7a5c44;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          margin-top: 2rem;
-          margin-bottom: 1rem;
-          font-size: 1.1rem;
+        function updateDisplay() {
+            document.getElementById('display-title').innerText = contentData.title.replace('# ', '');
+            document.getElementById('display-body').innerHTML = renderMarkdown(contentData.body);
+            document.getElementById('display-cafe').innerHTML = renderMarkdown(contentData.cafe);
+            document.getElementById('display-church').innerHTML = renderMarkdown(contentData.church);
         }
 
-        .markdown-content strong { color: #fff; font-weight: 700; }
-        .markdown-content em { color: #7a5c44; }
-
-        .markdown-content p {
-          margin-bottom: 1.8rem;
-          line-height: 1.9;
+        function toggleEditor() {
+            const viewer = document.getElementById('viewer');
+            const editor = document.getElementById('editor');
+            if (editor.classList.contains('hidden')) {
+                document.getElementById('input-title').value = contentData.title;
+                document.getElementById('input-body').value = contentData.body;
+                document.getElementById('input-cafe').value = contentData.cafe;
+                document.getElementById('input-church').value = contentData.church;
+                viewer.classList.add('hidden');
+                editor.classList.remove('hidden');
+            } else {
+                viewer.classList.remove('hidden');
+                editor.classList.add('hidden');
+            }
         }
 
-        .markdown-content ul { list-style: none; padding-left: 0; }
-        .markdown-content li {
-          margin-bottom: 0.8rem;
-          padding-left: 1.5rem;
-          position: relative;
-        }
-        .markdown-content li::before {
-          content: '—';
-          position: absolute;
-          left: 0;
-          color: #7a5c44;
-          opacity: 0.5;
+        function saveChanges() {
+            contentData.title = document.getElementById('input-title').value;
+            contentData.body = document.getElementById('input-body').value;
+            contentData.cafe = document.getElementById('input-cafe').value;
+            contentData.church = document.getElementById('input-church').value;
+            updateDisplay();
+            toggleEditor();
         }
 
-        /* Dark Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #0d0d0d; }
-        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #7a5c44; }
-      `}</style>
-    </div>
-  );
-};
-
-export default App;
+        window.onload = updateDisplay;
+    </script>
+</body>
+</html>
