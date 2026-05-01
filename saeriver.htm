@@ -23,7 +23,7 @@
 
         .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-        /* Grainy noise overlay */
+        /* Background Noise */
         .noise {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -40,7 +40,7 @@
             z-index: 0;
         }
 
-        /* Post Content Styling with Dynamic Controls */
+        /* Post Content Styling */
         .post-content h1 {
             font-size: 2.25rem;
             font-weight: 900;
@@ -57,73 +57,75 @@
             transition: all 0.2s ease;
         }
 
-        .post-content strong {
-            color: white;
-            font-weight: 700;
+        .post-content strong { color: white; font-weight: 700; }
+        .post-content em { color: var(--primary); font-style: italic; }
+
+        /* Comment Components */
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
         }
 
-        .post-content em {
-            color: var(--primary);
-            font-style: italic;
+        .cafe-comment-item {
+            border-bottom: 1px solid rgba(122, 92, 68, 0.15);
+            padding: 2rem 0.5rem;
+            transition: background 0.3s;
+        }
+        .cafe-comment-item:hover { background: rgba(122, 92, 68, 0.03); }
+
+        .church-comment-thread {
+            margin-bottom: 2rem;
+        }
+        .church-root-comment {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1.25rem 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            margin-top: 1.25rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .church-reply-comment {
+            margin-left: 3rem;
+            background: rgba(30, 58, 138, 0.15);
+            padding: 1rem 1.5rem;
+            border-radius: 14px;
+            border-left: 4px solid #3b82f6;
+            position: relative;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .church-reply-comment::before {
+            content: '└';
+            position: absolute;
+            left: -1.8rem;
+            top: 1rem;
+            color: #3b82f6;
+            font-weight: bold;
+            font-size: 1.4rem;
         }
 
-        .post-content blockquote {
-            border-left: 3px solid var(--primary);
-            padding: 1.5rem 2rem;
-            margin: 2.5rem 0;
-            background: rgba(122, 92, 68, 0.05);
-            font-style: italic;
-            color: #999;
+        /* Control UI */
+        .ctrl-btn {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #888;
+            transition: all 0.2s;
         }
-
-        /* Feedback Area Styling */
-        .feedback-item {
-            transition: all 0.2s ease;
-        }
+        .ctrl-btn:hover { border-color: var(--primary); color: white; }
+        .ctrl-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         /* Animations */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .animate-fade {
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #0d0d0d; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-
-        .btn-action {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(122, 92, 68, 0.4);
-        }
-
-        /* Control Button Style */
-        .ctrl-btn {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            color: #888;
-            transition: all 0.2s;
-        }
-        .ctrl-btn:hover {
-            border-color: var(--primary);
-            color: white;
-        }
-        .ctrl-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
+        .animate-fade { animation: fadeInUp 0.6s ease-out forwards; }
     </style>
 </head>
 <body>
@@ -139,299 +141,391 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     </div>
                     <div class="hidden xs:block">
-                        <h1 class="text-sm md:text-lg font-bold text-white tracking-widest uppercase">Secret Archive 2013</h1>
-                        <p class="text-[8px] md:text-[9px] text-[#666] tracking-[.3em] font-mono">ANONYMOUS MASOCHIST SOCIETY</p>
+                        <h1 class="text-sm font-bold text-white tracking-widest uppercase">Secret Archive 2013</h1>
+                        <p class="text-[8px] text-[#666] tracking-[.3em] font-mono">ANONYMOUS MASOCHIST SOCIETY</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <div class="text-right">
+                <div class="flex items-center gap-4 text-right">
+                    <div>
                         <p class="text-xs font-bold text-[#7a5c44]">Son Semi (1983)</p>
-                        <p class="text-[10px] text-[#444]">Teacher / Church Leader</p>
+                        <p class="text-[9px] text-[#444]">Teacher / Church Leader</p>
                     </div>
-                    <div class="w-10 h-10 rounded-full border border-[#333] bg-[#1a1a1a] flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#444]"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <div class="w-9 h-9 rounded-full border border-[#333] bg-[#1a1a1a] flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </div>
                 </div>
             </div>
         </nav>
 
         <main class="max-w-6xl mx-auto mt-4 md:mt-8 px-4 pb-20">
-            <!-- Toolbar & Controls -->
-            <div class="bg-[#161616] border border-[#222] p-4 rounded-2xl mb-6 shadow-2xl">
-                <div class="flex flex-col lg:flex-row gap-6 justify-between lg:items-center">
-                    <!-- Nav Controls -->
-                    <div class="flex items-center gap-3 order-2 lg:order-1">
-                        <button class="w-10 h-10 rounded-full bg-[#0d0d0d] flex items-center justify-center border border-[#333] opacity-20 cursor-not-allowed">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                        </button>
-                        <div class="px-4 py-2 bg-[#0d0d0d] rounded-full border border-[#222] font-mono text-[10px] tracking-widest text-[#7a5c44]">
-                            ENTRY 01 / 01
-                        </div>
-                        <button class="w-10 h-10 rounded-full bg-[#0d0d0d] flex items-center justify-center border border-[#333] opacity-20 cursor-not-allowed">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        </button>
-                        <button onclick="toggleEditor()" class="ml-auto lg:ml-2 btn-action bg-[#1a1a1a] text-white border border-[#333] px-4 py-2 rounded-full text-[10px] font-bold flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                            EDIT
-                        </button>
+            <!-- Appearance Toolbar & Navigation -->
+            <div class="bg-[#161616] border border-[#222] p-4 rounded-2xl mb-6 shadow-2xl flex flex-col md:flex-row justify-between items-center gap-4">
+                
+                <!-- Navigation Controls -->
+                <div class="flex items-center gap-2">
+                    <button id="btn-prev" onclick="prevPost()" class="w-8 h-8 rounded-full bg-[#0d0d0d] flex items-center justify-center border border-[#333] hover:border-[#7a5c44] transition-all disabled:opacity-20 disabled:cursor-not-allowed">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    <div id="entry-counter" class="px-3 py-1.5 bg-[#0d0d0d] rounded-full border border-[#222] font-mono text-[10px] tracking-widest text-[#7a5c44] min-w-[100px] text-center">
+                        ENTRY 01 / 01
                     </div>
+                    <button id="btn-next" onclick="nextPost()" class="w-8 h-8 rounded-full bg-[#0d0d0d] flex items-center justify-center border border-[#333] hover:border-[#7a5c44] transition-all disabled:opacity-20 disabled:cursor-not-allowed">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
 
-                    <!-- Appearance Controls -->
-                    <div class="flex flex-wrap items-center gap-6 order-1 lg:order-2 border-b lg:border-b-0 border-[#222] pb-4 lg:pb-0">
-                        <!-- Text Size -->
-                        <div class="flex items-center gap-3">
-                            <span class="text-[10px] font-mono text-[#444] uppercase tracking-widest">Text Size</span>
-                            <div class="flex gap-1">
-                                <button onclick="setProp('fontSize', '1rem', this, 'size')" class="ctrl-btn size-btn">S</button>
-                                <button onclick="setProp('fontSize', '1.15rem', this, 'size')" class="ctrl-btn size-btn active">M</button>
-                                <button onclick="setProp('fontSize', '1.3rem', this, 'size')" class="ctrl-btn size-btn">L</button>
-                            </div>
-                        </div>
-                        <!-- Line Height -->
-                        <div class="flex items-center gap-3">
-                            <span class="text-[10px] font-mono text-[#444] uppercase tracking-widest">Spacing</span>
-                            <div class="flex gap-1">
-                                <button onclick="setProp('lineHeight', '1.6', this, 'line')" class="ctrl-btn line-btn">Compact</button>
-                                <button onclick="setProp('lineHeight', '2', this, 'line')" class="ctrl-btn line-btn active">Normal</button>
-                                <button onclick="setProp('lineHeight', '2.4', this, 'line')" class="ctrl-btn line-btn">Wide</button>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Text Appearance -->
+                <div class="flex items-center gap-2 hidden lg:flex">
+                    <span class="text-[9px] font-mono text-[#555] uppercase tracking-widest mr-2">Text Control</span>
+                    <button onclick="setProp('fontSize', '1rem', this, 'size')" class="ctrl-btn size-btn">S</button>
+                    <button onclick="setProp('fontSize', '1.15rem', this, 'size')" class="ctrl-btn size-btn active">M</button>
+                    <button onclick="setProp('fontSize', '1.3rem', this, 'size')" class="ctrl-btn size-btn">L</button>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center gap-2">
+                    <button onclick="createNewPost()" class="bg-[#1a1a1a] text-[#7a5c44] border border-[#333] px-4 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-2 hover:bg-[#222] hover:border-[#7a5c44] transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        NEW
+                    </button>
+                    <button onclick="toggleEditor()" class="bg-[#1a1a1a] text-white border border-[#333] px-4 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-2 hover:bg-[#222] transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        EDIT
+                    </button>
                 </div>
             </div>
 
-            <!-- Main Post Area -->
+            <!-- Viewer -->
             <div id="viewer" class="animate-fade">
+                <!-- Main Article -->
                 <article class="bg-[#161616] rounded-3xl border border-[#222] shadow-3xl overflow-hidden relative mb-8">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#7a5c44] via-[#3a2c21] to-[#7a5c44]"></div>
-                    
                     <header class="p-6 md:p-12 bg-gradient-to-b from-[#1c1c1c] to-[#161616] border-b border-[#222]">
-                        <div class="flex items-center gap-3 text-[#7a5c44] mb-4 flex-wrap">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                            <span class="text-[10px] md:text-xs font-mono tracking-tighter">2013.04.15</span>
-                            <span class="w-1 h-1 bg-[#333] rounded-full hidden xs:block"></span>
-                            <span class="text-[10px] bg-[#222] px-3 py-1 rounded-full text-[#666]">ENTRY #001_SEMI</span>
-                        </div>
-                        <h1 class="text-2xl md:text-4xl font-bold text-white leading-tight" id="display-title">
-                            [1] 위험한 훈육, 짓눌린 감각... 스며드는 열기 속 교사의 아찔한 자기합리화 (Ft. 최창환)
+                        <h1 class="text-2xl md:text-3xl font-bold text-white leading-tight" id="display-title">
+                            위험한 훈육, 짓눌린 감각... 스며드는 열기 속 교사의 아찔한 자기합리화
                         </h1>
                     </header>
-
-                    <div class="p-6 md:p-16 post-content" id="display-body" style="font-size: 1.15rem; line-height: 2;">
-                        <!-- Content injected here -->
-                    </div>
-
-                    <div class="px-6 pb-6 flex justify-end">
-                        <div class="bg-[#0d0d0d] p-3 rounded-xl border border-[#222] flex items-center gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="red" fill="red"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                            <span class="text-[9px] text-[#555] font-mono tracking-tighter">AUTHENTICATED BY SEMI_83</span>
-                        </div>
+                    <div class="p-6 md:p-12 post-content" id="display-body" style="font-size: 1.15rem; line-height: 2.0;">
+                        <!-- Body content -->
                     </div>
                 </article>
 
                 <!-- Feedback Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                    <div class="bg-gradient-to-br from-[#1a1313] to-[#110d0d] border border-red-900/30 rounded-3xl p-6 md:p-8 shadow-xl">
-                        <h3 class="text-red-500/80 uppercase tracking-widest font-bold text-[10px] mb-4 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                            Secret Cafe Feedback
+                <div class="grid grid-cols-1 gap-12">
+                    <!-- Cafe Comments (Masochist Society) -->
+                    <section class="bg-gradient-to-br from-[#1a1313] to-[#110d0d] border border-red-900/30 rounded-3xl p-8 md:p-12 shadow-2xl">
+                        <h3 class="text-red-500/80 uppercase tracking-[0.2em] font-black text-[14px] mb-10 flex items-center gap-4">
+                            <span class="w-8 h-[1px] bg-red-900/50"></span>
+                            비밀의 정원 : 익명 댓글 리스트
+                            <span class="w-8 h-[1px] bg-red-900/50"></span>
                         </h3>
-                        <div class="text-[#a89393] font-serif italic space-y-4 feedback-item" id="display-cafe" style="font-size: 0.9rem;">
-                            <!-- Comments injected here -->
+                        <div id="display-cafe" class="space-y-4 text-[#d1c1c1] font-serif" style="font-size: 1.15rem;">
+                            <!-- Cafe comments parsed -->
                         </div>
-                    </div>
-                    <div class="bg-gradient-to-br from-[#13161a] to-[#0d0f11] border border-blue-900/30 rounded-3xl p-6 md:p-8 shadow-xl">
-                        <h3 class="text-blue-500/80 uppercase tracking-widest font-bold text-[10px] mb-4 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                            Church Community
+                    </section>
+
+                    <!-- Church Comments (Public Society) -->
+                    <section class="bg-gradient-to-br from-[#0f1216] to-[#08090a] border border-blue-900/20 rounded-3xl p-8 md:p-12 shadow-2xl">
+                        <h3 class="text-blue-500/80 uppercase tracking-[0.2em] font-black text-[14px] mb-10 flex items-center gap-4">
+                            <span class="w-8 h-[1px] bg-blue-900/50"></span>
+                            대구서광교회 고등부 게시판
+                            <span class="w-8 h-[1px] bg-blue-900/50"></span>
                         </h3>
-                        <div class="text-[#939ca8] font-serif space-y-4 feedback-item" id="display-church" style="font-size: 0.9rem;">
-                            <!-- Comments injected here -->
+                        <div id="display-church" class="text-[#c3ccd8] font-serif" style="font-size: 1.15rem;">
+                            <!-- Church comments parsed -->
                         </div>
-                    </div>
+                    </section>
                 </div>
             </div>
 
-            <!-- Editor Area -->
+            <!-- Editor -->
             <div id="editor" class="hidden animate-fade">
-                <div class="bg-[#161616] p-6 md:p-8 rounded-3xl border border-[#222] space-y-6 shadow-3xl">
-                    <div>
-                        <label class="text-[10px] font-bold text-[#444] uppercase tracking-widest mb-2 block">Article Title</label>
-                        <input id="input-title" type="text" class="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-4 text-white focus:border-[#7a5c44] outline-none transition-all">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-[#444] uppercase tracking-widest mb-2 block">Main Content (Body)</label>
-                        <textarea id="input-body" rows="12" class="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-5 font-mono text-sm text-[#aaa] focus:border-[#7a5c44] outline-none"></textarea>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="text-[10px] font-bold text-[#444] uppercase tracking-widest mb-2 block">Cafe Comments</label>
-                            <textarea id="input-cafe" rows="5" class="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-4 text-xs text-[#aaa] focus:border-[#7a5c44] outline-none"></textarea>
+                <div class="bg-[#161616] p-6 rounded-3xl border border-[#222] shadow-3xl">
+                    <div class="grid gap-4">
+                        <input id="input-title" type="text" placeholder="Title" class="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-3 text-white">
+                        <textarea id="input-body" rows="12" placeholder="Body (Markdown)" class="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-4 font-mono text-sm text-[#aaa]"></textarea>
+                        <div class="grid gap-4">
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[10px] text-[#7a5c44] font-bold uppercase tracking-widest">Cafe Archive (--- separator)</label>
+                                <textarea id="input-cafe" rows="8" class="bg-[#0d0d0d] border border-[#222] rounded-xl p-3 text-xs text-[#aaa] font-mono"></textarea>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Church Archive (> and >> hierarchy)</label>
+                                <textarea id="input-church" rows="8" class="bg-[#0d0d0d] border border-[#222] rounded-xl p-3 text-xs text-[#aaa] font-mono"></textarea>
+                            </div>
                         </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-[#444] uppercase tracking-widest mb-2 block">Church Comments</label>
-                            <textarea id="input-church" rows="5" class="w-full bg-[#0d0d0d] border border-[#222] rounded-xl p-4 text-xs text-[#aaa] focus:border-[#7a5c44] outline-none"></textarea>
+                        <div class="flex flex-wrap gap-2 mt-4 justify-between">
+                            <div class="flex gap-2">
+                                <button onclick="saveChanges()" class="bg-[#7a5c44] text-white px-8 py-3 rounded-full text-xs font-bold hover:brightness-110 transition-all">SAVE ARCHIVE</button>
+                                <button onclick="toggleEditor()" class="bg-[#222] text-white px-8 py-3 rounded-full text-xs font-bold hover:bg-[#333] transition-all">CANCEL</button>
+                            </div>
+                            <button onclick="deletePost()" class="bg-red-900/20 border border-red-900/50 text-red-500 px-6 py-3 rounded-full text-xs font-bold hover:bg-red-900/50 transition-all">DELETE</button>
                         </div>
-                    </div>
-                    <div class="flex flex-wrap gap-4 pt-4">
-                        <button onclick="saveChanges()" class="flex-1 md:flex-none bg-[#7a5c44] text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg shadow-[#7a5c4433] hover:brightness-125 transition-all">SAVE ARCHIVE</button>
-                        <button onclick="toggleEditor()" class="flex-1 md:flex-none bg-[#222] text-white px-8 py-3 rounded-full text-sm font-bold hover:bg-[#333] transition-all">CANCEL</button>
                     </div>
                 </div>
             </div>
         </main>
-
-        <footer class="py-12 md:py-20 text-center px-4">
-            <div class="w-12 h-1 bg-[#222] mx-auto mb-8"></div>
-            <p class="text-[10px] text-[#444] font-mono tracking-[0.4em] uppercase mb-2">Encrypted Data Transmission Protocol v.2013</p>
-            <p class="text-[10px] md:text-xs italic text-[#2a2a2a]">"가면 뒤의 숨결은 오직 이곳에서만 허락됩니다."</p>
-        </footer>
     </div>
 
     <script>
-        let contentData = {
-            title: "# [1] 위험한 훈육, 짓눌린 감각... 스며드는 열기 속 교사의 아찔한 자기합리화 (Ft. 최창환)",
-            body: `**장윤영:** 언니, 다시 2009년 4월로 돌아가죠. 그날 벚꽃이 참 예뻤다고 들었어요. 오후 4시, 교회가 한산해진 고등부실에서 최창환 군을 기다리고 있었다고요? 직접 PC방까지 연락해서 불러냈다고 하셨죠?
+        const STORAGE_KEY = 'secret_archive_2013_posts';
+        let posts = [];
+        let currentIndex = 0;
 
-**손세미:** 후... 윤영아, 네가 자꾸 그렇게 짓궂게 나오니까 더 말하기가... (얼굴을 붉히며) 응, 그랬어. 그 아이가 인근 PC방에 있다는 소식을 듣고 잠시 들러달라고 청했지. 교인들 발길이 뜸한 시간대라 조용히 얘기하기 좋을 것 같아서... *(지금 생각해도 내가 무슨 생각으로 그랬는지. ㅠㅠ)*
-
-**장윤영:** (피식 웃으며) 제가 알기로는 그날 최창환 군을 부른 게 단순한 훈육 때문만은 아니었다고 들었는데요. 그 아이를 둘러싼 '소문'들이 언니의 마음을 무겁게 했다고요? 어떤 소문이었길래요? 설마 제가 아는 그 '소문'인가요?
-
-**손세미:** 그래, 네가 짐작하는 그 소문이 맞을 거야. 그 아이가 몇몇 여학생들과 '아슬아슬한 선'을 넘고, '뜨거운 밤'을 보냈다는... 심지어 상대를 가리지 않는다는 이야기까지 돌았지. 교사로서 정말 충격적이었어. 그런데 더 심각했던 건... 그렇게 밤을 보낸 아이들이 결국 최창환에게 푹 빠져서 헤어나오지 못한다는 거였어. 너무 노골적이고 부끄러운 단어들이었어. *(휴, 그때도 지금도 내 귀에 맴도는 '크고, 강하고, 단단하고...' 하는 속삭임들은... 읍!)*
-
-**장윤영:** 헤어나오지 못한다... 왜 그랬을까요, 언니? 아이들이 입에 담기 힘든 말들을 했다면서요. '크고, 강하고, 단단하고...' 뭐 그런 단어들이요? 솔직히, 언니도 그때... 그런 말들이 귀에 맴돌 때마다 얼굴이 화끈 달아올랐다고 하셨잖아요. 정숙한 여교사 귀에는 노골적이고 부끄러운 말이었지만, 동시에... '알 수 없는 이끌림으로 상상력을 자극'했다고까지 표현하셨는데... 어떤 상상이었을까요? 정말 순수한 교육자적 상상이었을까요?
-
-**손세미:** (목소리를 낮추며) 윤영아, 내가 그때 무슨 다른 생각을 했겠니. 아이들이 잘못된 길로 빠져드는 것에 대한 안타까움과 걱정이 컸을 뿐이야. 다만... 다만 아주 잠깐... '대체 어떤 경험이 저 아이들을 저렇게 만들었을까?' 하는... 인간적인 호기심이 아주 찰나 스쳐 지나간 건 사실이야. 정말 교사로서 어떻게든 아이들을 바른 길로 이끌어야 한다는... 그런... 책임감 때문에 그랬던 거지. 다른 의미는 전혀 없었어! *(말하면서도 내 입이 내 맘 같지 않네. ㅠㅠ)*
-
-**장윤영:** (빙긋 웃으며) '다른 의미는 전혀 없었다...' 정말요, 언니? 지난주에 최창환 군이 벚꽃놀이를 핑계로 데려온 새 여학생을 봤을 때도요? 165cm에 여우상 미녀, '황홀경에 빠진 눈빛'을 보고 '크고, 강하고, 단단한 그 무엇'에 매료된 흔적을 언니 혼자만 알아챘다고 하셨잖아요. 그때도 그저 '교육자적 시선'으로만 본 걸까요?
-
-**손세미:** (한숨) 하아... 그래. 그 아이를 보자마자 또 한숨이 나오더라. 누가 봐도 눈에 띄는 미인이었지. 고등부 교사들과 학생들 모두 수군거렸지만, 나는 그 아이의 눈빛에서 모든 걸 읽을 수 있었어. 정말... 온통 사랑에 물든 황홀경에 빠진 듯한 눈빛... 분명 어젯밤 그들이 함께 보낸 시간의 흔적이 고스란히 담겨 있었지. 그 순간, 나는 저 아이가 '크고, 강하고, 단단한' 그 무엇에 매료된 게 너무나도 자명해 보였어. 그 눈빛은 정말... 내 학생이 잘못된 유혹에 빠진 것 같아서 너무나 안타까웠어.
-
-**장윤영:** 안타까웠다... (의미심장하게) 언니는 그때 27살이었고, 교사라는 직분 때문에 늘 참고 살아왔잖아요. 그런 언니의 눈에, 쾌락에 푹 빠진 어린 아이의 눈빛이 그렇게 '자명하게' 보였다는 건... 언니 안에도 그런 '무엇'에 대한 갈망이 있었던 건 아닐까요? 어쩌면 언니도 그 아이처럼 '황홀경에 빠지고 싶다'는 무의식적인 욕망을 느꼈던 건 아닐까요?
-
-**손세미:** 윤영아! 정말 왜 그래! 내가 무슨... 그런... (당황하며 손사래) 나는 그저 아이들을 올바른 길로 이끌어야 한다는 사명감뿐이었어. 그 유혹의 위험성을 알았기 때문에 더 강하게 제자들을 지켜주고 싶었던 거야. 그 이상도 이하도 아니야. *(휴, 정말이지 윤영이 너는 너무 직설적이야... 내가 너무 솔직하게 말했나?)*
-
-**장윤영:** 그런데 언니, 그 아이의 방황이 사실은 언니 때문이라고 생각하셨다면서요? 2008년 겨울, 그 아이가 언니에게 고백했었죠? 2002년 소년부 겨울성경학교 때부터 언니를 사랑했다고. 언니는 "결혼적령기를 앞둔 여교사이고, 너는 아직 고등학생에 불과하다. 또래의 예쁜 친구들을 만나렴" 하고 단호하게 선을 그었다고요.
-
-**손세미:** 응, 그랬지. 내가 교육자로서 당연히 해야 할 말이었어. 그 아이의 순수한 마음은 고맙지만, 선생님과 학생의 선을 지켜야 하니까. 현실적으로 불가능한 일이었고... 내가 거절한 게 그 아이에게 상처가 되었을까 봐 그게 내내 마음에 걸렸어.
-
-**장윤영:** 그 상처가 아이의 방황으로 이어졌고, 언니가 바랐던 '또래의 여성'이 결국 '뜨거운 밤'을 함께 하는 존재가 될 줄은 상상도 못 했다고요. 언니는 그 아이의 방황이, 자신을 향한 마음을 거절한 언니에게 대한 일종의 반항이나 좌절감의 표출이라고 생각한 거죠?
-
-**손세미:** (씁쓸하게 웃으며) 그렇게 생각할 수밖에 없었어. 내가 조금만 더 현명하게 대처했더라면, 그 아이가 이렇게까지 방황하지 않았을 수도 있다는 죄책감... 그게 컸지. 그래서 더더욱 내가 그 아이를 바른 길로 이끌어야 한다는 사명감을 느꼈던 거야.
-
-**장윤영:** 자, 그럼 드디어 그 순간이네요. 최창환 군이 고등부실 문을 열고 들어섰을 때, 언니는 어떤 표정으로, 어떤 마음으로 그 아이를 맞았나요?
-
-**손세미:** 나는 애써 침착한 표정을 지으려고 노력했어. 단호하면서도, 그 아이 마음에 상처를 주지 않도록 부드운 어조로 말했지. "창환아... 선생님은 네가, 더 이상 네 몸을 그렇게 함부로 굴리지 않았으면 좋겠어." 라고. 정말 교육자로서의 마지막 경고였어.
-
-**장윤영:** 그 아이는 어떤 반응이었나요? 바로 반성하던가요?
-
-**손세미:** 아니... 그는 고개를 숙인 채 한동안 말이 없었어. 그런데... 이상하게도 그의 시선이 자꾸 내 얇은 블라우스 너머로 솟아오른... (말끝을 흐리며) 내 가슴 쪽을 향하고 있는 것만 같았어. 그때 정말 부끄러움과 함께 묘한 긴장감이 실내를 가득 채웠지. *(지금 생각해도 아찔해. 후으...)*
-
-**장윤영:** (의미심장하게 미소 지으며) 부끄러움... 그리고 '묘한 긴장감'. 그 긴장감은 대체 무엇이었을까요? 언니의 몸이 그 아이의 시선을 의식했던 건 아닐까요? 그리고 창환 군은 뭐라고 대답하던가요?
-
-**손세미:** 당황스러움에 어찌할 바를 모르던 찰나, 그 아이가 나직이 입을 열었어. "선생님 앞에 서면... 전 아직도 열두 살 꼬마 같아요. 제가 너무 보잘것없어 보여서..." 그러더니 머리를 긁적이며 말을 잇더라고. "그런데 다른 애들이랑 있을 때만큼은 제가 대단한 남자가 된 것 같아서..."
-
-**장윤영:** 아... 그 말이 언니의 '빗장'을 풀었다고요. 그 아이의 방황이 '높은 벽'인 언니를 넘지 못한 좌절감에서 비롯됐다고요. 단순한 훈계가 아니라 '제자 사랑'의 영역이라고. 그래서 어떻게 하셨어요, 언니? 두 팔을 벌려 안아주려고 하셨죠?
-
-**손세미:** 응, 그랬어. 그 아이의 상처받은 영혼을 따뜻하게 보듬어 안아줘야 한다는 생각밖에 없었어. 그게 선생님으로서 내가 할 수 있는 최고의 위로라고 생각했으니까. 그래서 나도 모르게 두 팔을 벌려 그를 꼭 안아주려 했지.
-
-**장윤영:** 그런데 그 순간, 최창환 군은 마치 기다렸다는 듯 언니의 가슴팍으로 얼굴을 '깊숙이' 파묻었다고요. 언니가 두 팔을 벌리자마자 바로 파고들었다는 건... 언니의 그 행동을 예상이라도 한 듯이요?
-
-**손세미:** (말을 잇지 못하며) ....그랬어. 정말 마치... 기다렸다는 듯이... (목소리가 떨림)
-
-**장윤영:** (날카롭게) 그 순간 언니의 감정은 어땠나요? '당황스러워 숨이 멎는 줄 알았다'고 하셨는데. 그리고 그 아이의 '뜨거운 호흡'과 '단단한 얼굴'이 언니의 '풍만한 굴곡'을 파고들었다고요. '정숙한 여교사의 옷차림 속에 숨겨두었던, 저조차도 감당하기 힘들었던 그 풍만한 살덩이들이 소년의 얼굴에 짓눌려 뭉개지는 생경한 감각'... 이 부분, 아주 구체적으로 묘사해주실 수 있을까요? 그때의 '온도, 냄새, 압력' 같은 것들요.
-
-**손세미:** (크게 심호흡하며) 정말... 순간 머릿속이 새하얘지면서 숨이 턱 막히는 것 같았어. 얇은 면 블라우스 한 장을 사이에 두고... 창환이의 뜨거운 숨결이 내 가슴팍으로 고스란히 전해져 왔어. 갓 뛰어온 건지, 아니면 긴장한 건지... 거친 숨소리가 들릴 때마다 내 가슴이 그 호흡에 맞춰 들썩이는 것 같았지. 그의 얼굴이 내 가슴에 닿는 압력... 그 단단한 뼈대와 내 살이 부딪히는 느낌... 평소엔 느끼지 못했던... 내 가슴의 풍만한 굴곡이 그 아이의 얼굴에 짓눌려 뭉개지는 듯한... 정말... 생경하고... 아찔한 감각이었어. 그 아이에게서 나는... 땀 냄새와... 묘하게 달큰한 어린 소년 특유의 체취가 내 코끝을 간지럽혔지. *(아... 그때의 감각이... 아직도 이렇게 생생하다니. 내 몸은 정말 잊지 못하는구나. 심장이 두근거려. ㅠㅠ)*
-
-**장윤영:** 그 아찔한 감각에 몸이 굳었음에도, 언니는 그를 밀어내지 않았다고 하셨어요. '선생님으로서 최고의 위로', '상처받은 영혼을 치유하는 길'이라고 믿었기 때문이라고요. 정말 그 이유뿐이었을까요? 혹시 '갑자기 밀어내면 어색한 분위기가 더 이상해질까 봐' 하는 두려움도 있었다고요. 그리고... '창환이의 거친 숨소리가 가슴골 사이로 스며들 때마다, 다리 사이가 화끈하게 달아오르는 듯한 묘한 감각이 밀려왔다'고 적혀 있는데... 이건 대체 뭘까요, 언니? 이 모든 걸 언니가 '감당해야 할 몫'이라고, '저만 참으면 되는 것'이라고 표현하셨어요.
-
-**손세미:** (고개를 숙인 채 작게 속삭이듯) 그래... 처음엔 정말 당황스러웠지만... 이게 창환이에게 내가 줄 수 있는 유일한 위로라고 생각했어. 내가 밀어내면 그 아이가 더 상처받을까 봐... 그리고 상황이 더 이상해질까 봐... (잠시 침묵) 그리고... 그... 다리 사이가 화끈거리는 듯한... 묘한 감각은... 아마... 너무 긴장해서 그랬을 거야. 갑작스러운 상황에 몸이 경직되어서... 순간적으로 이상한 느낌이 들었던 것 같아. 내가 이런 감각까지 감당해야 한다고 생각했어. 그 아이를 올바른 길로 이끌기 위한 나의... 나의 희생이라고... 스스로를 다독였지. 오직 내가 참고 이겨내야 할 부분이라고. *(아... 제발 믿어줘. 정말 그렇게 믿으려고 했어. 믿고 싶었어. 하지만... 그 감각은 정말... 정말... 잊히지 않아... 흑흑)*
-
-**장윤영:** (언니의 어깨를 토닥이며) 그래요, 언니. 충분히 이해해요. 그때 언니는 완벽한 선생님이어야 했고, 그런 감각들은 죄책감으로 다가왔겠죠. 하지만... 그 감각이 언니의 본능이었을 수도 있다는 생각은 안 해봤어요? 어쩌면 언니도, 그 아이가 다른 여자아이들에게 주었던 그 '크고, 강하고, 단단한' 쾌감을... 무의식적으로 갈망했던 건 아닐까요? 0%의 사랑. 좋아요. 그럼 그때 그 상황에서 언니의 '사랑'은 정확히 몇 퍼센트였을까요?
-
-**손세미:** (고개를 들고 눈물을 글썽이며) ...사랑이라니. 말도 안 돼. 그건 그저... 내가 학생을 제대로 돌보지 못했다는 죄책감, 그리고 그 아이의 상처받은 영혼을 치유해주고 싶은... '선생님'으로서의 책임감... 오직 그것뿐이었어. 사랑은... 정말 0%였어. 그 이상도 이하도 아니야... *(그렇게 믿으려고 했어... 정말이야...)*
-
-### 인터뷰 후일담
-
-**손세미:** 윤영이와의 인터뷰를 마치고 녹취록을 다시 듣고, 이렇게 글로 옮기면서 다시 한번 그때를 곱씹어 본다. '사랑 확신도 0%'. 그래, 난 정말 최창환을 사랑한 게 아니었어. 그건 교사로서, 어른으로서, 미성숙한 제자를 올바른 길로 인도해야 한다는 사명감에서 비롯된... 지극히 교과서적인 책임감이었을 뿐이야. 그 아이의 방황이 나 때문이라고 생각해서 미안했고, 그 아이가 내 품에서 위안을 찾는다고 착각했으니까.
-
-하지만... 윤영이의 날카로운 질문들과... 내 몸이 기억하는 생생한 감각들을 마주하면서... 조금은 다른 생각도 들었다. 내가 정말 그저 '선생님'이기만 했을까? 그 아이의 거친 숨결이 내 가슴을 파고들고, 풍만한 살덩이가 짓눌리는 아찔한 감각에 온몸이 굳었던 그때... 그리고 다리 사이로 스멀스멀 올라오던 그 묘한 열기... 그걸 그저 '긴장'이나 '희생'으로만 치부할 수 있을까?
-
-어쩌면 나는, 그 완벽한 교사라는 가면 뒤에 숨겨진 '손세미'라는 여자의 본능을 그때 처음으로 직면했을지도 모르겠다. 정숙한 척, 고결한 척했지만, 사실은 나도 그저 피 끓는 27살의 '여자'였고... 어린 소년의 거친 남성성에 본능적으로 반응했던 건 아닐까. *(젠장, 타이핑을 치는 지금도 그때의 느낌에 아래가 꿉꿉해지는 것 같아. ㅎㅎ 진짜 미쳤나 봐 ㅠㅠ)*
-
-그때의 나는 분명 완벽한 선생님인 척했지만... 사실은 그 누구보다 '음탕한' 감정들을 억누르고 있었다는 걸 이제야 인정한다. 그 찰나의 순간... 제자 사랑이라는 거룩한 명분 아래... 가장 뜨거운 '여성'으로 살았던 27살의 내가... 참... 좋았다. 그리워... 흑. 지금 31살, 결혼적령기에 솔로라는 민망한 현실과는 너무도 동떨어진... 아련한 추억이다. 다음 이야기는... 좀 더 솔직해져야 할까? *(괜히 시작했어. 나 어떡해 진짜...)*`,
-            cafe: `* **비밀의정원**: 세미님... 세상에... 가슴이 너무 뛰어서 끝까지 읽기가 힘들었어요. 교실에서의 그 압박감, 저도 느꼈던 것 같아요.
-* **DeepPurple**: '교육자적 희생'이라는 단어가 이렇게 관능적으로 들릴 줄이야. 창환이라는 친구, 정말 부럽네요.`,
-            church: `* **박권사**: 세미 선생님, 항상 기도하고 있어요. 우리 고등부의 보배십니다.
-* **교회언니**: 세미야, 이번 주 선자리 잊지 않았지? 기대해!`
+        const initialPost = {
+            title: "",
+            body: ``,
+            cafe: ``,
+            church: ``
         };
 
+        // Load data on startup
+        window.onload = () => {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                try {
+                    posts = JSON.parse(savedData);
+                } catch (e) {
+                    posts = [initialPost];
+                }
+            } else {
+                posts = [initialPost];
+            }
+            updateDisplay();
+        };
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+        }
+
+        function parseCafeComments(text) {
+            if (!text) return '';
+            return text.split('---').map(item => {
+                if(!item.trim()) return '';
+                const lines = item.trim().split('\n');
+                const headerLine = lines[0]; 
+                const content = lines.slice(1).join('\n').trim();
+                
+                const nickMatch = headerLine.match(/\*\*(.*?)\*\*/);
+                const dateMatch = headerLine.match(/\*(.*?)\*/);
+                const nick = nickMatch ? nickMatch[1] : 'Unknown';
+                const date = dateMatch ? dateMatch[1] : '';
+
+                return `<div class="cafe-comment-item">
+                    <div class="comment-header">
+                        <span class="px-2 py-0.5 bg-red-900/30 text-red-400 text-[11px] font-bold rounded">MEMB</span>
+                        <span class="text-[16px] font-black text-white/90 tracking-tight">${nick}</span>
+                        <span class="text-[11px] font-mono text-[#555] ml-auto">${date}</span>
+                    </div>
+                    <p class="text-[17px] leading-relaxed text-[#aaa] pl-1 font-light italic">"${content}"</p>
+                </div>`;
+            }).join('');
+        }
+
+        function parseChurchComments(text) {
+            if (!text) return '';
+            const lines = text.split('\n');
+            let html = '';
+            let currentComment = null;
+
+            const flush = () => {
+                if (!currentComment) return;
+                
+                if (currentComment.type === 'announcement') {
+                    html += `<div class="mb-8 p-5 border-l-4 border-blue-600 bg-blue-600/5 rounded-r-xl">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-[14px] font-black text-white">${currentComment.nick}</span>
+                            <span class="text-[11px] text-[#444] font-mono">${currentComment.date}</span>
+                        </div>
+                        <div class="text-[16px] text-blue-200 font-bold leading-snug">${currentComment.content}</div>
+                    </div>`;
+                } else if (currentComment.type === 'root') {
+                    html += `<div class="church-root-comment">
+                            <div class="comment-header">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                <span class="text-[15px] font-black text-blue-100">${currentComment.nick}</span>
+                                <span class="text-[10px] font-mono text-white/20 ml-auto">${currentComment.date}</span>
+                            </div>
+                            <p class="text-[17px] leading-relaxed text-white/80 mt-1">${currentComment.content}</p>
+                        </div>`;
+                } else if (currentComment.type === 'reply') {
+                    html += `<div class="church-reply-comment">
+                        <div class="comment-header">
+                            <span class="text-[14px] font-bold text-blue-300/90">${currentComment.nick}</span>
+                            <span class="text-[10px] font-mono text-white/10 ml-auto">${currentComment.date}</span>
+                        </div>
+                        <p class="text-[16px] leading-relaxed text-white/60 font-light mt-1">${currentComment.content}</p>
+                    </div>`;
+                }
+                currentComment = null;
+            };
+
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                if (!trimmedLine) {
+                    flush();
+                    return;
+                }
+                
+                let type = 'announcement';
+                let cleanLine = trimmedLine;
+                
+                if (trimmedLine.startsWith('>>')) {
+                    type = 'reply';
+                    cleanLine = trimmedLine.replace(/^>>\s*/, '');
+                } else if (trimmedLine.startsWith('>')) {
+                    type = 'root';
+                    cleanLine = trimmedLine.replace(/^>\s*/, '');
+                }
+
+                const nickMatch = cleanLine.match(/\*\*(.*?)\*\*/);
+                const dateMatch = cleanLine.match(/\*(.*?)\*/);
+
+                if (nickMatch && cleanLine.indexOf(nickMatch[0]) === 0) {
+                    flush();
+                    const nick = nickMatch[1];
+                    const date = dateMatch ? dateMatch[1] : '';
+                    let content = cleanLine.replace(/\*\*.*?\*\*/, '').replace(/\*.*?\*/, '').trim();
+                    currentComment = { type, nick, date, content };
+                } else {
+                    if (currentComment) {
+                        currentComment.content += (currentComment.content ? '<br>' : '') + cleanLine;
+                    } else {
+                        currentComment = { type, nick: 'Unknown', date: '', content: cleanLine };
+                    }
+                }
+            });
+            
+            flush();
+            return html;
+        }
+
         function renderMarkdown(text) {
+            if (!text) return '';
             return text
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/### (.*)/g, '<h3 class="text-xl font-bold text-white mt-12 mb-6">$1</h3>')
-                .replace(/# (.*)/g, '') // Hide redundant header
+                .replace(/\*(.*?)\*/g, '<em class="text-[#7a5c44] font-medium">$1</em>')
+                .replace(/### (.*)/g, '<h3 class="text-xl font-black text-white mt-12 mb-6 border-l-4 border-[#7a5c44] pl-4 uppercase tracking-tighter">$1</h3>')
                 .replace(/\n/g, '<br>');
         }
 
         function setProp(prop, value, btn, type) {
             const body = document.getElementById('display-body');
-            const cafe = document.getElementById('display-cafe');
-            const church = document.getElementById('display-church');
-            
-            // Adjust body content
             body.style[prop] = value;
-            
-            // Adjust feedback content (proportionally)
-            if (prop === 'fontSize') {
-                const numericValue = parseFloat(value);
-                const feedbackSize = (numericValue * 0.8) + "rem";
-                cafe.style.fontSize = feedbackSize;
-                church.style.fontSize = feedbackSize;
-            } else if (prop === 'lineHeight') {
-                cafe.style.lineHeight = value;
-                church.style.lineHeight = value;
-            }
-
-            // Update UI
             document.querySelectorAll(`.${type}-btn`).forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }
 
         function updateDisplay() {
-            document.getElementById('display-title').innerText = contentData.title.replace('# ', '');
-            document.getElementById('display-body').innerHTML = renderMarkdown(contentData.body);
-            document.getElementById('display-cafe').innerHTML = renderMarkdown(contentData.cafe);
-            document.getElementById('display-church').innerHTML = renderMarkdown(contentData.church);
+            if (posts.length === 0) {
+                // If all posts deleted, reset to initial
+                posts = [initialPost];
+                currentIndex = 0;
+                saveData();
+            }
+
+            const currentPost = posts[currentIndex];
+            
+            document.getElementById('display-title').innerText = currentPost.title || '제목 없음';
+            document.getElementById('display-body').innerHTML = renderMarkdown(currentPost.body);
+            document.getElementById('display-cafe').innerHTML = parseCafeComments(currentPost.cafe);
+            document.getElementById('display-church').innerHTML = parseChurchComments(currentPost.church);
+
+            // Update Navigation UI
+            const counter = document.getElementById('entry-counter');
+            counter.innerText = `ENTRY ${String(currentIndex + 1).padStart(2, '0')} / ${String(posts.length).padStart(2, '0')}`;
+
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+
+            btnPrev.disabled = currentIndex === 0;
+            btnNext.disabled = currentIndex === posts.length - 1;
+        }
+
+        // Navigation Functions
+        function prevPost() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateDisplay();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function nextPost() {
+            if (currentIndex < posts.length - 1) {
+                currentIndex++;
+                updateDisplay();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Editor Functions
+        function createNewPost() {
+            const newPost = {
+                title: `[${posts.length + 1}] 새로운 기록`,
+                body: "내용을 입력해주세요.",
+                cafe: "**메조히스트N** *201X-XX-XX*\n댓글 내용을 입력해주세요.\n---\n",
+                church: "> **이름** *201X-XX-XX*\n> 댓글 내용을 입력해주세요.\n>> **이름2** *201X-XX-XX*\n>> 대댓글을 입력해주세요."
+            };
+            
+            posts.push(newPost);
+            currentIndex = posts.length - 1;
+            
+            // Automatically open editor for the new post
+            const e = document.getElementById('editor');
+            if (e.classList.contains('hidden')) {
+                toggleEditor();
+            } else {
+                // If already in editor, just reload the inputs
+                document.getElementById('input-title').value = posts[currentIndex].title;
+                document.getElementById('input-body').value = posts[currentIndex].body;
+                document.getElementById('input-cafe').value = posts[currentIndex].cafe;
+                document.getElementById('input-church').value = posts[currentIndex].church;
+            }
+            saveData();
         }
 
         function toggleEditor() {
-            const viewer = document.getElementById('viewer');
-            const editor = document.getElementById('editor');
-            if (editor.classList.contains('hidden')) {
-                document.getElementById('input-title').value = contentData.title;
-                document.getElementById('input-body').value = contentData.body;
-                document.getElementById('input-cafe').value = contentData.cafe;
-                document.getElementById('input-church').value = contentData.church;
-                viewer.classList.add('hidden');
-                editor.classList.remove('hidden');
+            const v = document.getElementById('viewer');
+            const e = document.getElementById('editor');
+            if (e.classList.contains('hidden')) {
+                document.getElementById('input-title').value = posts[currentIndex].title || '';
+                document.getElementById('input-body').value = posts[currentIndex].body || '';
+                document.getElementById('input-cafe').value = posts[currentIndex].cafe || '';
+                document.getElementById('input-church').value = posts[currentIndex].church || '';
+                v.classList.add('hidden'); 
+                e.classList.remove('hidden');
+                window.scrollTo(0,0);
             } else {
-                viewer.classList.remove('hidden');
-                editor.classList.add('hidden');
+                v.classList.remove('hidden'); 
+                e.classList.add('hidden');
             }
         }
 
         function saveChanges() {
-            contentData.title = document.getElementById('input-title').value;
-            contentData.body = document.getElementById('input-body').value;
-            contentData.cafe = document.getElementById('input-cafe').value;
-            contentData.church = document.getElementById('input-church').value;
-            updateDisplay();
+            posts[currentIndex] = {
+                title: document.getElementById('input-title').value,
+                body: document.getElementById('input-body').value,
+                cafe: document.getElementById('input-cafe').value,
+                church: document.getElementById('input-church').value
+            };
+            saveData();
+            updateDisplay(); 
             toggleEditor();
         }
 
-        window.onload = updateDisplay;
+        function deletePost() {
+            if(confirm("정말로 이 기록을 삭제하시겠습니까?")) {
+                posts.splice(currentIndex, 1);
+                if(currentIndex >= posts.length) {
+                    currentIndex = Math.max(0, posts.length - 1);
+                }
+                saveData();
+                updateDisplay();
+                toggleEditor(); // Close editor after delete
+            }
+        }
+
     </script>
 </body>
 </html>
