@@ -29,6 +29,73 @@
             transition: font-size 0.2s ease, line-height 0.2s ease;
         }
 
+        /* 인터뷰 대화 스타일 */
+        .interview-speech {
+            margin-bottom: 1.8rem;  /* 질문과 답변 사이의 줄간격 (가시성 확보) */
+            padding-left: 0.5rem;
+            transition: margin 0.2s ease;
+        }
+        
+        /* 각 화자의 발화 블록 */
+        .speaker-block {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+        
+        /* 이름 스타일: 굵고, 약간의 오른쪽 간격, 인터뷰이/어 구분 색상 */
+        .speaker-name {
+            font-family: 'Nanum Gothic', sans-serif;
+            font-weight: 800;
+            font-size: 1.1em;
+            letter-spacing: -0.3px;
+            background: rgba(185, 28, 28, 0.2);
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            display: inline-block;
+            color: #ffb3b3;
+            text-shadow: 0 0 2px rgba(0,0,0,0.3);
+            margin-right: 0.5rem;   /* 이름과 내용 사이 간격 */
+            white-space: nowrap;
+        }
+        
+        /* 인터뷰이(손세미)는 색상 톤을 약간 다르게 (선택적 구분) */
+        .speaker-name[data-speaker="손세미"] {
+            color: #ff8c8c;
+            background: rgba(220, 38, 38, 0.25);
+            border-left: 3px solid #ef4444;
+        }
+        
+        /* 내용 텍스트 */
+        .speech-content {
+            flex: 1;
+            line-height: 1.65;
+            word-break: keep-all;
+        }
+        
+        /* 일반 문단 (후일담 등) */
+        .normal-paragraph {
+            margin: 1.5rem 0;
+            padding: 1rem 0;
+            border-top: 1px dashed #2c2c2c;
+            border-bottom: 1px dashed #2c2c2c;
+            color: #cbd5e1;
+            font-style: normal;
+        }
+        
+        /* 모바일에서 이름 줄바꿈 방지 */
+        @media (max-width: 640px) {
+            .speaker-name {
+                white-space: normal;
+                font-size: 0.9rem;
+                padding: 0.15rem 0.6rem;
+            }
+            .interview-speech {
+                margin-bottom: 1.5rem;
+            }
+        }
+
         .control-panel {
             background: rgba(30, 30, 35, 0.95);
             border: 1px solid #444;
@@ -193,6 +260,7 @@
 
         <article class="relative bg-zinc-900/30 p-8 md:p-12 rounded-3xl border border-zinc-800">
             <div id="main-text" class="readable-text prose prose-invert max-w-none text-white fade-in">
+                <!-- 인터뷰 대화가 가독성 높은 형태로 렌더링될 영역 -->
             </div>
         </article>
 
@@ -246,7 +314,64 @@
             return text.replace(/[&<>"']/g, m => map[m]);
         }
 
-        // Parse church board Markdown format
+        // 인터뷰 텍스트를 가독성 높은 HTML 로 변환 (이름·내용 간격 + 발화 사이 여백)
+        function beautifyInterviewText(rawText) {
+            if (!rawText) return '';
+            const lines = rawText.split(/\r?\n/);
+            let resultHtml = [];
+            let normalBuffer = [];   // 일반 문장들 (후일담, "인터뷰 후일담" 등)
+            
+            // 화자 패턴 (장윤영, 손세미 뒤에 콜론과 공백)
+            const speakerPattern = /^(장윤영|손세미):\s*(.*)$/;
+            
+            // flush 일반 텍스트 블록
+            const flushNormal = () => {
+                if (normalBuffer.length) {
+                    const paraText = normalBuffer.join(' ').trim();
+                    if (paraText) {
+                        resultHtml.push(`<div class="normal-paragraph">${escapeHtml(paraText)}</div>`);
+                    }
+                    normalBuffer = [];
+                }
+            };
+            
+            for (let line of lines) {
+                const trimmed = line.trim();
+                if (trimmed === '') continue;
+                
+                const match = trimmed.match(speakerPattern);
+                if (match) {
+                    // 발화 시작 전에 쌓인 일반 텍스트 플러시
+                    flushNormal();
+                    
+                    const speaker = match[1];
+                    let content = match[2].trim();
+                    // 내용 내 줄바꿈 보존을 위해 <br> 처리 (긴 대사 안의 개행)
+                    if (content) {
+                        content = escapeHtml(content).replace(/\n/g, '<br>');
+                    }
+                    // 인터뷰 발화 블록 생성
+                    // 이름과 내용 사이 간격: .speaker-name의 margin-right + gap, 추가로 여백 확보
+                    resultHtml.push(`
+                        <div class="interview-speech">
+                            <div class="speaker-block">
+                                <span class="speaker-name" data-speaker="${speaker}">${escapeHtml(speaker)}</span>
+                                <span class="speech-content">${content || ''}</span>
+                            </div>
+                        </div>
+                    `);
+                } else {
+                    // 인터뷰 대사가 아닌 일반 텍스트라면 (예: [인터뷰 후일담] 등)
+                    normalBuffer.push(trimmed);
+                }
+            }
+            // 마지막 일반 텍스트 처리
+            flushNormal();
+            
+            return resultHtml.join('');
+        }
+        
+        // Parse church board Markdown format (수정 없이 유지, 기존 방식 + 안정성)
         function parseChurchComments(mdText) {
             const lines = mdText.split('\n');
             const threads = [];
@@ -264,7 +389,6 @@
                         if (currentThread) {
                             currentThread.replies.push(currentComment);
                         } else {
-                            // orphan reply – wrap in its own thread
                             threads.push({ top: null, replies: [currentComment] });
                         }
                     }
@@ -278,8 +402,6 @@
                 const trimmed = line.trim();
                 if (trimmed === '') continue;
 
-                // Header line: > or >> followed by **nickname** (date)
-                // 실제 데이터 형식: > **이름** (날짜) 또는 >> **이름** (날짜)
                 const headerMatch = trimmed.match(/^(>{1,2}) \*\*(.+?)\*\* \((.+?)\)$/);
                 if (headerMatch) {
                     flushComment();
@@ -290,7 +412,6 @@
                     currentComment = { type, nickname, date, content: '' };
                     pendingContent = [];
                 } else {
-                    // Content line – must start with > or >>
                     let contentText = null;
                     if (line.startsWith('>> ')) {
                         contentText = line.substring(3).trim();
@@ -304,7 +425,6 @@
             }
             flushComment();
 
-            // Build HTML
             let html = '';
             for (const thread of threads) {
                 if (thread.top) {
@@ -329,6 +449,7 @@
             return html;
         }
 
+        // 에피소드 데이터 (mainText 인터뷰 포함)
         const episodes = [
             {
                 title: "# [1] 그날 예배당에서의 일",
@@ -685,9 +806,10 @@
 >> 현우형, 그게 바로 '알파메일' 창환이 형의 타고난 능력 아닐까요? 고결하고 단아한 줄만 알았던 세미쌤의 '내면의 본능'을 그렇게 완벽하게 끄집어내는. '8살 연하 제자에게 무너진 31살 여교사'라는 저 댓글처럼, 저도 언젠가 그런 콧대 높은 연상녀를 완벽하게 굴복시켜보고 싶어요. 그때 '압도적인 존재감'이 뭔지 직접 경험해보고 싶네요.
 `,
             },
-                        {
+                                    {
                 title: "# [1] 그날 예배당에서의 일",
                 mainText: `
+                
 `,
                 cafeComments: `
 
@@ -695,9 +817,10 @@
                 churchComments: `
 `,
             },
-                        {
+                                                {
                 title: "# [1] 그날 예배당에서의 일",
                 mainText: `
+                
 `,
                 cafeComments: `
 
@@ -705,9 +828,43 @@
                 churchComments: `
 `,
             },
-                        {
+                                                {
                 title: "# [1] 그날 예배당에서의 일",
                 mainText: `
+                
+`,
+                cafeComments: `
+
+                `,
+                churchComments: `
+`,
+            },
+                                                {
+                title: "# [1] 그날 예배당에서의 일",
+                mainText: `
+                
+`,
+                cafeComments: `
+
+                `,
+                churchComments: `
+`,
+            },
+                                                {
+                title: "# [1] 그날 예배당에서의 일",
+                mainText: `
+                
+`,
+                cafeComments: `
+
+                `,
+                churchComments: `
+`,
+            },
+                                                {
+                title: "# [1] 그날 예배당에서의 일",
+                mainText: `
+                
 `,
                 cafeComments: `
 
@@ -715,7 +872,7 @@
                 churchComments: `
 `,
             }
-        ];
+                  ];
 
         let currentIndex = 0;
         let sizeLevel = 2; 
@@ -765,15 +922,16 @@
             const ep = episodes[currentIndex];
             document.getElementById('post-title').textContent = ep.title;
             
-            // ✅ mainText에 breaks: true 적용 (줄바꿈 자동 변환)
-            document.getElementById('main-text').innerHTML = marked.parse(ep.mainText, { breaks: true });
+            // 인터뷰 텍스트를 전용 가독성 포맷으로 렌더링 (이름 간격 + 발화 줄간격)
+            const formattedInterview = beautifyInterviewText(ep.mainText);
+            document.getElementById('main-text').innerHTML = formattedInterview;
             
-            // ✅ cafeComments에도 breaks: true 적용
+            // Cafe comments 는 마크다운 파싱 (기존 방식 유지)
             const cafeHtml = marked.parse(ep.cafeComments, { breaks: true })
                 .replace(/<hr>/g, '<div class="comment-divider"></div>');
             document.getElementById('cafe-comments').innerHTML = cafeHtml;
             
-            // ✅ churchComments 파싱 (정규식 수정 완료)
+            // Church comments
             document.getElementById('church-comments').innerHTML = parseChurchComments(ep.churchComments);
             
             document.getElementById('page-indicator').textContent = `${currentIndex + 1} / ${episodes.length}`;
