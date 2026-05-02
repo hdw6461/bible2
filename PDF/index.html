@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>매주 설교 슬라이드 & 텍스트</title>
+    <!-- 폰트 로드 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind 설정 확장 -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', '-apple-system', 'sans-serif'],
+                        serif: ['"Noto Serif KR"', 'serif'],
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(15px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 기본 테마 변수 */
+        :root {
+            --bg-body: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --text-main: #1e293b;
+        }
+
+        /* 다크 모드 변수 */
+        html.dark {
+            --bg-body: #020617;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* 다이나믹 카드 스타일 */
+        .glass-card {
+            background-color: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.025);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        html.dark .glass-card {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 0.75rem;
+        }
+
+        /* 스크롤바 커스텀 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.4);
+            border-radius: 10px;
+        }
+        html.dark ::-webkit-scrollbar-thumb {
+            background: rgba(75, 85, 99, 0.4);
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 font-sans selection:bg-blue-300 selection:text-blue-900 overflow-hidden text-slate-900 dark:text-slate-100">
+
+    <!-- [항상 고정되는 영역] Top Fixed Area -->
+    <div class="w-full px-4 pt-4 max-w-5xl mx-auto flex flex-col gap-2 flex-shrink-0 z-50">
+        
+        <!-- Header -->
+        <header class="glass-card p-3 md:p-4 px-5 flex justify-between items-center">
+            <div class="flex items-center gap-3 md:gap-4">
+                <div class="bg-gradient-to-tr from-blue-600 to-cyan-500 text-white p-2.5 rounded-xl shadow-lg shadow-blue-500/30 flex items-center justify-center">
+                    <i class="fas fa-book-open text-lg md:text-xl"></i>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">홍목의 방</h1>
+            </div>
+            
+            <button id="themeToggle" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:scale-110 hover:bg-blue-100 dark:hover:bg-slate-600 transition-all duration-300 shadow-inner">
+                <i id="themeIcon" class="fas fa-moon text-lg md:text-xl"></i>
+            </button>
+        </header>
+
+        <!-- Navigation & Info -->
+        <div class="glass-card p-3 px-4 md:px-5 relative overflow-hidden group">
+            <div class="flex flex-row justify-between items-center gap-2 relative z-10">
+                
+                <div class="flex flex-col flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <span id="contentTypeBadge" class="px-2 py-0.5 rounded text-[10px] md:text-xs font-bold uppercase tracking-wider shadow-sm flex-shrink-0">PDF</span>
+                        <p id="currentDate" class="text-xs md:text-sm font-semibold text-blue-600 dark:text-blue-400 truncate"></p>
+                    </div>
+                    <h2 id="currentTitle" class="text-lg md:text-xl font-bold tracking-tight truncate pr-2"></h2>
+                </div>
+                
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                    <button id="prevBtn" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 border border-slate-200 dark:border-slate-700 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed shadow-sm active:scale-95">
+                        <i class="fas fa-chevron-left"></i>
+                        <span class="hidden md:inline ml-1.5 font-bold text-sm">이전</span>
+                    </button>
+                    <div class="px-2 md:px-3 py-1.5 md:py-2 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 hidden sm:block">
+                        <span id="pageIndicator" class="font-bold text-slate-700 dark:text-slate-300 text-xs md:text-sm tracking-widest"></span>
+                    </div>
+                    <button id="nextBtn" class="flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 border border-slate-200 dark:border-slate-700 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed shadow-sm active:scale-95">
+                        <span class="hidden md:inline mr-1.5 font-bold text-sm">다음</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- [스크롤되는 본문 영역] Main Viewer Area -->
+    <main class="flex-1 w-full px-4 pb-4 max-w-5xl mx-auto mt-2 min-h-0 relative">
+        <div id="viewerContainer" class="glass-card h-full flex flex-col p-1.5 md:p-2 relative overflow-hidden">
+            
+            <div class="relative w-full h-full overflow-hidden rounded-[10px] bg-slate-100 dark:bg-slate-900/50 shadow-inner">
+                
+                <!-- PDF Section -->
+                <div id="pdfSection" class="w-full h-full relative">
+                    <div id="loading" class="absolute inset-0 flex flex-col items-center justify-center z-0">
+                        <div class="relative w-12 h-12 md:w-16 md:h-16 flex items-center justify-center mb-4">
+                            <div class="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-slate-700"></div>
+                            <div class="absolute inset-0 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
+                            <i class="fas fa-file-pdf text-blue-500/50 text-lg md:text-xl animate-pulse-slow"></i>
+                        </div>
+                        <p class="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400">자료를 불러오고 있습니다...</p>
+                    </div>
+                    <iframe id="pdfFrame" class="relative z-10 transition-opacity duration-700 opacity-0 bg-white dark:bg-slate-800" src="" allow="autoplay"></iframe>
+                </div>
+
+                <!-- Text Section -->
+                <div id="textSection" class="hidden w-full h-full overflow-y-auto p-6 md:p-10 lg:p-16 bg-[#fdfbf7] dark:bg-[#121212] transition-colors duration-500 relative scroll-smooth">
+                    <article class="max-w-3xl mx-auto pb-32">
+                        <div id="textContent" class="font-serif text-slate-800 dark:text-slate-300 transition-all duration-300">
+                            <!-- JS Content -->
+                        </div>
+                    </article>
+                </div>
+                
+                <!-- Text Controls (하단 한 줄 가로 플로팅 메뉴) -->
+                <div id="textControls" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-40 p-2 px-4 flex flex-row items-center gap-6 shadow-2xl border border-white/20 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/80 backdrop-blur-2xl rounded-full transition-all duration-300 animate-fade-in-up w-max max-w-[90%] md:max-w-md">
+                    
+                    <!-- Font Size Control -->
+                    <div class="flex items-center gap-3">
+                        <span class="text-[10px] md:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tighter whitespace-nowrap">글자 크기</span>
+                        <div class="flex gap-1 bg-slate-200/50 dark:bg-slate-900/50 p-1 rounded-full">
+                            <button onclick="changeTextStyles('font', -1)" class="w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-slate-700 shadow-sm hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition-all active:scale-90"><i class="fas fa-minus text-[10px]"></i></button>
+                            <button onclick="changeTextStyles('font', 1)" class="w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-slate-700 shadow-sm hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition-all active:scale-90"><i class="fas fa-plus text-[10px]"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="w-[1px] h-6 bg-slate-300 dark:bg-slate-600"></div>
+
+                    <!-- Line Height Control -->
+                    <div class="flex items-center gap-3">
+                        <span class="text-[10px] md:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tighter whitespace-nowrap">줄 간격</span>
+                        <div class="flex gap-1 bg-slate-200/50 dark:bg-slate-900/50 p-1 rounded-full">
+                            <button onclick="changeTextStyles('line', -1)" class="w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-slate-700 shadow-sm hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition-all active:scale-90"><i class="fas fa-minus text-[10px]"></i></button>
+                            <button onclick="changeTextStyles('line', 1)" class="w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-slate-700 shadow-sm hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition-all active:scale-90"><i class="fas fa-plus text-[10px]"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const sermonData = [
+            {
+                type: "text",
+                date: "2026년 5월 1일",
+                title: "하나님의 음성",
+                content: `청년 시절 Again 1907의 광풍 아래에서 살았다. 성령, 은사, 영적체험이 주요 이슈였다. 나 또한 구약성경에 나온 인물들처럼 하나님의 음성을 듣고 싶었다. 처음으로 충격받았던 책은 베니힌의 <안녕하세요 성령님>이었다. 진짜 성령과 대화를 한다고? 나 또한 자연스럽게 그런 분위기 속에서 은사를 구했다. 관련해서 처음 읽은 책은 조이 도우슨의 <하나님의 음성을 듣는 삶>이었을 것이다. 그와 유사한 책으로는 로렌 커닝햄의 <하나님, 정말 당신이십니까?>였던 것 같다. 두 책 모두 읽었다. 나는 그들의 친밀함이 부러웠다.
+
+당시 군 인트라넷에 어떤 신앙 게시판이 있었던 것으로 기억한다. 그때 한 병사는 브래드 저삭의 <내 양은 내 음성을 듣는다>는 책을 추천했다. 물론 그 책은 읽지 않고 도서관에 신청만 넣어두었다. 다만 책 제목 자체만으로 무슨 의미인지 알 수 있었다. 그래서 하나님의 음성을 들을 수 있었냐고 묻는다면 비슷한 은사체험을 했다. 군 시절 뜨겁게 하루에 1-2시간 이상 기도하며 놀라운 신비체험을 했다. 당시 나는 ‘예언기도’와 유사한 것들을 경험했다. 어느 시점에 나는, 하나님의 음성을 듣기 원했던 시절의 체험을 자연스럽게 영유하고 있었다.
+
+하지만 시간이 지나면서 점점 그런 체험을 갈구하진 않았다. 굳이 따지자면 축구에서 몇몇 선수가 선보이는 화려한 기술에 가까웠다. 쓰면 화려하지만 생각보다는 쓸모가 없고, 특별한 국면에서 필요는 하지만 굳이 쓸 필요가 없는 신기한 기술같았달까. 그러면서 나는 자연스럽게, 읽진 않았던 때에도, 달라스 윌라드의 <하나님의 음성>이 말하는 바에 가까워져갔다. 굳이 두 종류의 책을 비교하자면 전자의 책은 ‘기술’을 가르치고, ‘기술’에 근거한 사례를 나열한다. 반면 후자의 책은 ‘태도’를 가르치고 ‘태도’에 근거해 하나님이 누구이며, 우리가 누구인지에 집중한다.
+
+이번 주 요나서 강해설교 첫 번째를 준비하면서 나는 ‘하나님의 음성’에 대해 다루기로 했다. 요나는 열왕기 기록에 따르면 참된 예언자 반열에 있다고 보기 힘들다. 그는 국수주의자에 가깝다. 여로보암 2세의 측근이다. 하지만 요나서는 국수주의자 요나에게, 니느웨에 하나님의 뜻을 전할 것을 말한다. 이는 역설이다. 하나님께서, 그 일을 가장 하기 싫어하는 사람에게, 그 일을 맡기시는 이야기다. 나는 첫 번째 설교로 ‘하나님의 음성’에 대한 기술을 비판하고, 태도에 대해서 강변하며, 무척이나 끈질기고도 집요하게 ‘말씀’하시는 하나님에 대해 설교하기로 마음을 먹었다.
+
+사실 ‘하나님의 음성’에 대해 설교하기로 마음을 먹은 이유 중의 하나는 나의 실존 때문이다. 12월 마지막 주에 부임한 이후 매주 새로운 사건이 터졌다. 아슬아슬한 상황이 이어졌다. 매주 나는 진로를 고민했다. 문제는 내가 고민한다고 해결될 것도 아닌데도 끈질기게 고민한다는 점이다. 다양한 가상의 상황을 놓고 수십 번 시나리오를 돌렸다. 그 어떤 시나리오 하나 딱 마음에 들지 않았다. 그럼에도 계속해서 고민하며 하나님의 인도하심을 갈구했다. 사실 내가 해야 할 설교는, 가장 먼저 내게 하고 싶은 설교에 가깝다. ‘하나님의 음성’을 듣는 기술적 방법을 궁구하지 말고, 어떤 ‘하나님의 음성’이든 순종하겠다는 태도로 하나님을 모시라는, 매우 담백한, 나를 위한 설교.
+
+최근 PNTC고린도후서가 로고스 오리지널로 번역되었다. 그와 유사한 시기에 박윤만 선생님의 고린도후서도 감은사에서 출간되었다. 안그래도 고린도후서를 살펴보던 차이기에 둘 다 조금씩 발췌해서 읽었다. 박윤만 선생님은 ‘고난’이란 키워드에 집중하면서, 왕왕 그리스-로마 철학자들의 ‘고난’에 대한 이해와 비교한다. 그리스-로마 철학자들은 ‘고난’에 대해 초월할 수 있는 ‘덕’을 함양할 것을 요청한다. 반면 고린도후서는 ‘덕’에 전혀 관심이 없다. 이에 대한 이야기를 읽으면서 사실 갸우뚱했다. 왜냐하면 둘 다 ‘고난’이라는 키워드를 다루지만 그리스 로마 철학자들이 몰두한 ‘고난’과 바울이 씨름한 ‘고난’의 종류는 달라보였기 때문이었다. 나는 틀린 비교란 생각이 들었다.
+
+하지만 박윤만 선생님의 주석 부록에는 <예수의 바울의 길>이라는 글이 있다. 석굴암 불상을 보고는 모든 고통을 초월한 부처의 ‘덕’을 묵상하면서, 그리스도인의 성화에 대해 고민한 생각들이 기록되어 정리가 되어있다. 박윤만 선생님은 예수의 사례와 바울의 사례를 들면서, 이들은 부처와는 달랐다고 말한다. 다음 문장이 핵심이라 생각한다. “번민도 없고 갈등도 없이 그냥 줄기차게 고속도로를 달리는 것이 아니라, 수많은 번민, 갈등, 그리고 혼돈과 흔들림 속에서 한 가닥 잡는 하나님의 말씀을 붙잡고 한 걸음 또 한 걸음 내디디며 걸어가는 것이 모든 그리스도인이 걸어야 할 성화의 길이다.” 박윤만 선생님의 실존적 고민이 묻어난 비교였던 것이다.
+
+-
+
+하나님의 음성을 듣는 기술 자체가 틀린 것은 아니다. 반면 그런 유의 기술이 소비되는 기저에는, ‘하나님의 음성’을 듣고 나면 확신과 기쁨을 통해, 그리스 로마 철학자들이 말하는 ‘덕’ 혹은 부처가 말하는 ‘성불’에 준하는 상태에 이를 수 있다는 우리의 망상이 있다. 하지만 실제 그리스도인의 삶은 그렇지 않다. 나는 매번 그러했다. 매번 기도 중에 하나님의 뜻을 알아차리곤 했다. 하지만 알아차렸다고 해서 번민이 사라지진 않았다. 고민과 갈등은 계속되었다. 오히려 후일에야, 그때 그 뜻이 기억나고, 그 뜻을 통하여 내가 처한 상황이 이해되었다. 하나님은 나에게 늘 말씀하셨지만, 오히려 그 말씀은 나를 더욱 고민케 만들었다. 상황에 초월하는 평강을 주시는 말씀이 아니라, 상황에 더욱 몰입하여 고뇌와 갈등을 겪게 하고, 이를 후일 선해하는 말씀이었다.
+
+그러고보면 나는 여전히 씨름하고 고뇌하고 갈등하지만, 이는 하나님의 말씀을 듣지 않아 괴로워하는 류는 전혀 아니다. 오히려 내가 나아갈 방향이 무엇인지에 대해서는 아직 침묵하고 계시지만, 내가 앞으로 나아가기 위해서 견지해야 할 태도에 대해서는 끈질기게 말씀하시기에, 나는 이를 두고 씨름하고 고뇌하며 갈등한다. 그리스도인이 걸어야 할 길은, 부처의 길과도, 그리스 로마 철학자의 길과도 다르다. 그분의 말씀이 원체 신묘막측하시기에 그러하다.`
+            },
+            {
+                type: "pdf",
+                date: "2026년 5월 3일",
+                title: "의로운 나침반 (The Righteous Compass)",
+                url: "https://hdw6461.github.io/bible2/PDF/260503The_Righteous_Compass.pdf"
+            },
+            {
+                type: "pdf",
+                date: "2024년 5월 19일",
+                title: "진리가 너희를 자유케 하리라",
+                url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+            }
+        ];
+
+        let currentIndex = 0;
+        let currentFontSize = 1.1; 
+        let currentLineHeight = 1.85; 
+
+        const viewerContainer = document.getElementById('viewerContainer');
+        const pdfSection = document.getElementById('pdfSection');
+        const textSection = document.getElementById('textSection');
+        const pdfFrame = document.getElementById('pdfFrame');
+        const textContent = document.getElementById('textContent');
+        const textControls = document.getElementById('textControls');
+        const loading = document.getElementById('loading');
+        
+        const currentDate = document.getElementById('currentDate');
+        const currentTitle = document.getElementById('currentTitle');
+        const contentTypeBadge = document.getElementById('contentTypeBadge');
+        const pageIndicator = document.getElementById('pageIndicator');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        function init() {
+            setupTheme();
+            updateContent();
+            applyTextStyles();
+        }
+
+        function getEmbedUrl(rawUrl) {
+            return `https://docs.google.com/viewer?url=${encodeURIComponent(rawUrl)}&embedded=true`;
+        }
+
+        function changeTextStyles(type, direction) {
+            if (type === 'font') {
+                currentFontSize += direction * 0.1;
+                currentFontSize = Math.max(0.8, Math.min(currentFontSize, 2.2));
+            } else if (type === 'line') {
+                currentLineHeight += direction * 0.15;
+                currentLineHeight = Math.max(1.2, Math.min(currentLineHeight, 3.0));
+            }
+            applyTextStyles();
+        }
+
+        function applyTextStyles() {
+            textContent.style.fontSize = `${currentFontSize}rem`;
+            textContent.style.lineHeight = `${currentLineHeight}`;
+        }
+
+        function parseTextContent(rawText) {
+            return rawText.split('\n').map(line => {
+                const trimmed = line.trim();
+                if (trimmed === '-') {
+                    return `
+                        <div class="py-8 flex items-center justify-center opacity-70">
+                            <div class="w-1.5 h-1.5 rounded-full bg-blue-300 dark:bg-blue-600 mx-2"></div>
+                            <div class="w-12 h-[1px] bg-slate-300 dark:bg-slate-600"></div>
+                            <div class="w-1.5 h-1.5 rounded-full bg-blue-300 dark:bg-blue-600 mx-2"></div>
+                        </div>
+                    `;
+                } else if (trimmed.length > 0) {
+                    return `<p class="mb-5 tracking-tight break-keep text-justify transition-all duration-300">${trimmed}</p>`;
+                }
+                return '';
+            }).join('');
+        }
+
+        function updateContent() {
+            const current = sermonData[currentIndex];
+            currentDate.textContent = current.date;
+            currentTitle.textContent = current.title;
+            pageIndicator.textContent = `${currentIndex + 1} / ${sermonData.length}`;
+            
+            viewerContainer.classList.remove('animate-fade-in-up');
+            void viewerContainer.offsetWidth; 
+            viewerContainer.classList.add('animate-fade-in-up');
+
+            if (current.type === 'pdf') {
+                pdfSection.style.display = 'block';
+                textSection.style.display = 'none';
+                textControls.style.display = 'none'; 
+                
+                contentTypeBadge.textContent = 'Sermon Note';
+                contentTypeBadge.className = 'px-2 py-0.5 rounded text-xs font-bold uppercase bg-gradient-to-r from-red-500 to-rose-400 text-white flex-shrink-0';
+                
+                loading.style.display = 'flex';
+                pdfFrame.style.opacity = '0';
+                pdfFrame.src = getEmbedUrl(current.url);
+
+                pdfFrame.onload = () => {
+                    loading.style.display = 'none';
+                    pdfFrame.style.opacity = '1';
+                };
+            } else {
+                pdfSection.style.display = 'none';
+                textSection.style.display = 'block';
+                textControls.style.display = 'flex'; 
+                
+                contentTypeBadge.textContent = 'Essays';
+                contentTypeBadge.className = 'px-2 py-0.5 rounded text-xs font-bold uppercase bg-gradient-to-r from-emerald-500 to-teal-400 text-white flex-shrink-0';
+                
+                textContent.innerHTML = parseTextContent(current.content);
+                textSection.scrollTop = 0;
+            }
+
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === sermonData.length - 1;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateContent();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < sermonData.length - 1) {
+                currentIndex++;
+                updateContent();
+            }
+        });
+
+        function setupTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+            updateThemeIcon(savedTheme);
+
+            themeToggle.addEventListener('click', () => {
+                const isDark = document.documentElement.classList.contains('dark');
+                const newTheme = isDark ? 'light' : 'dark';
+                document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+        }
+
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+                themeIcon.classList.add('text-yellow-400');
+            } else {
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+                themeIcon.classList.remove('text-yellow-400');
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
